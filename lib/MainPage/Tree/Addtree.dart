@@ -6,7 +6,7 @@ class AddTreePage extends StatefulWidget {
   const AddTreePage({super.key, required this.ID});
 
   @override
-  _AddTreePageState createState() => _AddTreePageState();
+  State<AddTreePage> createState() => _AddTreePageState();
 }
 
 class _AddTreePageState extends State<AddTreePage> {
@@ -27,32 +27,33 @@ class _AddTreePageState extends State<AddTreePage> {
         DatabaseReference locationRef = _dbRef.child('locationindividualtrees');
         DatabaseReference treesRef = _dbRef.child('individualtrees');
 
-        // 2. อ่าน TreeID ล่าสุด
-        DataSnapshot snapshot = await treesRef
-            .orderByChild('TreeID')
-            .limitToLast(1)
-            .get();
-        int newTreeID = 1;
+        // 2. อ่าน Itree ล่าสุด
+        DataSnapshot snapshot = await treesRef.get();
+        int newTreeNum = 1;
         if (snapshot.exists) {
-          Map lastTree = (snapshot.value as Map);
-          var last = lastTree.values.first;
-          if (last['TreeID'] != null) {
-            newTreeID = (last['TreeID'] as int) + 1;
+          final keys = (snapshot.value as Map).keys
+              .where((k) => k.toString().startsWith('Itree'))
+              .map((k) => int.tryParse(k.toString().replaceFirst('Itree', '')))
+              .where((n) => n != null)
+              .toList();
+          if (keys.isNotEmpty) {
+            keys.sort();
+            newTreeNum = keys.last! + 1;
           }
         }
+        final newTreeKey = "Itree$newTreeNum";
 
         // 3. เพิ่ม locationindividualtrees แล้วเก็บ key
         DatabaseReference newLocationRef = locationRef.push();
         await newLocationRef.set({
-          "TreeID": newTreeID,
+          "TreeID": "Itree$newTreeNum",
           "Latitude": double.tryParse(_latitudeController.text) ?? 0,
           "Longitude": double.tryParse(_longitudeController.text) ?? 0,
         });
         String locationId = newLocationRef.key!;
 
-        // 4. เพิ่ม individualtrees โดยใช้ TreeID และ LocationId ที่ได้
-        await treesRef.child(newTreeID.toString()).set({
-          "TreeID": newTreeID,
+        // 4. เพิ่ม individualtrees โดยใช้ key ที่กำหนดเอง
+        await treesRef.child(newTreeKey).set({
           "Circumference": double.tryParse(_circumferenceController.text) ?? 0,
           "Group_ID": int.tryParse(_groupIdController.text) ?? 1,
           "Height": double.tryParse(_heightController.text) ?? 0,

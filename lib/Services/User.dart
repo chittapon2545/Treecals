@@ -7,36 +7,19 @@ class UserService {
   );
 
   Future<String?> login(String username, String password) async {
-    final snapshot =
-        await _userRef.get(); //ดึงข้อมูลจาก Firebase จากตาราง users
-    // ตรวจสอบว่าข้อมูลที่ดึงมาเป็น snapshot ที่มีข้อมูลหรือไม่
-
+    final snapshot = await _userRef
+        .get(); //ดึงข้อมูลจาก Firebase จากตาราง users
     if (!snapshot.exists) return null;
-
     final data = snapshot.value;
-
     if (data is Map<dynamic, dynamic>) {
       for (final entry in data.entries) {
         final user = entry.value;
 
         if (user != null && user['Username'] == username) {
           final storedHashedPassword = user['Password_hash'];
-
           if (storedHashedPassword is String &&
               BCrypt.checkpw(password, storedHashedPassword)) {
             return entry.key.toString(); // รหัสผ่านถูกต้อง
-          }
-        }
-      }
-    } else if (data is List<dynamic>) {
-      for (int i = 0; i < data.length; i++) {
-        final user = data[i];
-        if (user != null && user['Username'] == username) {
-          final storedHashedPassword = user['Password_hash'];
-
-          if (storedHashedPassword is String &&
-              BCrypt.checkpw(password, storedHashedPassword)) {
-            return i.toString(); // รหัสผ่านถูกต้อง
           }
         }
       }

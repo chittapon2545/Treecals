@@ -242,6 +242,9 @@ class _HomePageState extends State<HomePage> {
                                     "ความสูง: ${tree['tree']?['Height'] ?? '-'} ม.",
                                   ),
                                   Text(
+                                    "สายพันธุ์:  ${tree['groupName'] ?? '-'}",
+                                  ),
+                                  Text(
                                     "คาร์บอนเครดิต: ${tree['credit']?['Credit'] ?? '-'}",
                                   ),
                                 ],
