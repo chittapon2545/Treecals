@@ -206,7 +206,7 @@ class _LoginPageState extends State<LoginPage> {
                                     );
 
                                     if (userID != null) {
-                                      int _ID = int.parse(userID);
+                                      String _ID = userID;
                                       Navigator.pushAndRemoveUntil(
                                         context,
                                         MaterialPageRoute(

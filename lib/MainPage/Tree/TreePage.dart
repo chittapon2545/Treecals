@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:treecals/MainPage/Tree/Addtree.dart';
 
 class TreePage extends StatefulWidget {
-  final int ID;
+  final String ID; // เปลี่ยน int เป็น String
   const TreePage({super.key, required this.ID});
 
   @override
@@ -10,7 +10,7 @@ class TreePage extends StatefulWidget {
 }
 
 class _TreePageState extends State<TreePage> {
-  late int _ID;
+  late String _ID;
   @override
   void initState() {
     super.initState();

@@ -78,7 +78,7 @@ class UserService {
     return null;
   }
 
-  Future<Map<String, dynamic>?> UserData(int ID) async {
+  Future<Map<String, dynamic>?> UserData(String ID) async {
     final snapshot = await _userRef.get();
 
     if (!snapshot.exists) return null;
@@ -88,7 +88,7 @@ class UserService {
     if (data is Map<dynamic, dynamic>) {
       try {
         final entry = data.entries.firstWhere(
-          (entry) => entry.value != null && entry.key == ID.toString(),
+          (entry) => entry.value != null && entry.key == ID,
         );
         return {
           'Firstname': entry.value['Firstname'],
@@ -102,31 +102,16 @@ class UserService {
       } catch (e) {
         return null;
       }
-    } else if (data is List<dynamic>) {
-      if (ID >= 0 && ID < data.length) {
-        final user = data[ID];
-        if (user != null && user is Map) {
-          return {
-            'Firstname': user['Firstname'],
-            'Lastname': user['Lastname'],
-            'Address': user['Address'],
-            'Email': user['Email'],
-            'Phone': user['Phone'],
-            'Password_hash': user['Password_hash'],
-            'Username': user['Username'],
-          };
-        }
-      }
     }
     return null;
   }
 
-  Future<String?> Repassword(int ID, String oldPassword) async {
+  Future<String?> Repassword(String ID, String oldPassword) async {
     final snapshot = await _userRef.get();
     if (!snapshot.exists) return null;
     final data = snapshot.value;
     if (data is Map<dynamic, dynamic>) {
-      final user = data[ID.toString()];
+      final user = data[ID];
 
       if (user != null) {
         final storedHashedPassword = user['Password_hash'];
@@ -153,14 +138,14 @@ class UserService {
   }
 
   Future<String?> updateUserData(
-    int ID,
+    String ID, // เปลี่ยน int เป็น String
     String firstname,
     String lastname,
     String email,
     String address,
   ) async {
     try {
-      final userRef = _userRef.child(ID.toString());
+      final userRef = _userRef.child(ID);
       final snapshot = await _userRef.get();
       if (!snapshot.exists) return null;
 

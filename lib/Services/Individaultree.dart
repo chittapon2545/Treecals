@@ -67,31 +67,24 @@ class IndividaultreeService {
         // ตรวจสอบว่า value เป็น Map และมี UserID ตรงกับ userId ที่รับเข้ามา
 
         Map<String, dynamic>? credit;
-        // ประกาศตัวแปรสำหรับเก็บข้อมูลเครดิตของต้นไม้
 
-        if (value['TreeID'] != null) {
-          // ถ้ามี TreeID
+        // ใช้ key (Itree1, Itree2, ...) แทน value['TreeID']
+        for (var c in creditList) {
+          // วนลูปข้อมูลเครดิตแต่ละรายการ
 
-          for (var c in creditList) {
-            // วนลูปข้อมูลเครดิตแต่ละรายการ
-
-            if (c is Map &&
-                c['TreeID']?.toString() == value['TreeID']?.toString()) {
-              // ถ้าเครดิตเป็น Map และ TreeID ตรงกับต้นไม้
-
-              credit = Map<String, dynamic>.from(c);
-              // แปลงเครดิตเป็น Map<String, dynamic> แล้วเก็บไว้
-
-              break;
-              // เจอแล้วหยุดวนลูป
-            }
+          if (c is Map && c['TreeID']?.toString() == key.toString()) {
+            // ถ้าเครดิตเป็น Map และ TreeID ตรงกับต้นไม้
+            credit = Map<String, dynamic>.from(c);
+            // แปลงเครดิตเป็น Map<String, dynamic> แล้วเก็บไว้
+            break;
+            // เจอแล้วหยุดวนลูป
           }
         }
         String groupName;
         var groupId = value['Group_ID'];
         final groupKey = "${groupId.toString()}";
         groupName = groupsData[groupKey]?['name'];
-        
+
         result.add({'tree': value, 'credit': credit, 'groupName': groupName});
         // เพิ่ม Map ที่ประกอบด้วยข้อมูลต้นไม้และเครดิตลงใน result
       }

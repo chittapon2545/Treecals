@@ -4,7 +4,7 @@ import 'package:treecals/Services/ConvertPassword.dart';
 import 'package:treecals/Services/User.dart';
 
 class EditpassPage extends StatefulWidget {
-  final int ID;
+  final String ID; // เปลี่ยน int เป็น String
   const EditpassPage({super.key, required this.ID});
 
   @override
@@ -17,7 +17,7 @@ class _EditpassPageState extends State<EditpassPage> {
   TextEditingController _oldPasswordEditController = TextEditingController();
   TextEditingController _newPasswordEditController = TextEditingController();
   TextEditingController _checkPasswordEditController = TextEditingController();
-  late int _ID;
+  late String _ID; // เปลี่ยน int เป็น String
   String oldPassword = "";
   String newPassword = "";
   @override
@@ -71,8 +71,10 @@ class _EditpassPageState extends State<EditpassPage> {
                                   Navigator.pushAndRemoveUntil(
                                     context,
                                     MaterialPageRoute(
-                                      builder: (context) =>
-                                          NavigatorPage(state1: 3, ID: _ID),
+                                      builder: (context) => NavigatorPage(
+                                        state1: 3,
+                                        ID: _ID.toString(),
+                                      ),
                                     ),
                                     (route) => false,
                                   );

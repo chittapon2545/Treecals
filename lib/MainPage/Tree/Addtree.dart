@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:firebase_database/firebase_database.dart';
 
 class AddTreePage extends StatefulWidget {
-  final int ID; // รับ UserID
+  final String ID; // ต้องเป็น String
   const AddTreePage({super.key, required this.ID});
 
   @override

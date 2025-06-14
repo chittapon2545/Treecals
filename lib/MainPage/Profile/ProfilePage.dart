@@ -4,7 +4,7 @@ import 'package:treecals/MainPage/Profile/EditChoicePage.dart';
 import 'package:treecals/Services/User.dart';
 
 class ProfilePage extends StatefulWidget {
-  final int ID;
+  final String ID;
   const ProfilePage({super.key, required this.ID});
 
   @override
@@ -13,7 +13,7 @@ class ProfilePage extends StatefulWidget {
 
 class _ProfilePageState extends State<ProfilePage> {
   UserService userService = UserService();
-  late int _ID;
+  late String _ID;
   String name = "";
   String username = "";
   String phone = "";

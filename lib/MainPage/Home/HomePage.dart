@@ -3,7 +3,7 @@ import 'package:treecals/Services/User.dart';
 import 'package:treecals/Services/Individaultree.dart';
 
 class HomePage extends StatefulWidget {
-  final int ID;
+  final String ID; // เปลี่ยนจาก int เป็น String
   const HomePage({super.key, required this.ID});
 
   @override
@@ -13,7 +13,7 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   UserService userService = UserService();
   IndividaultreeService treeService = IndividaultreeService();
-  late int _ID;
+  late String _ID; // เปลี่ยนจาก int เป็น String
   String name = "";
   int _state = 1;
   List<Map<String, dynamic>> myTrees = [];
@@ -36,9 +36,7 @@ class _HomePageState extends State<HomePage> {
   }
 
   Future<void> loadTrees() async {
-    myTrees = await IndividaultreeService().getTreesAndCreditsByUser(
-      _ID,
-    ); // _ID คือ userId ที่ล็อกอิน
+    myTrees = await IndividaultreeService().getTreesAndCreditsByUser(_ID);
     setState(() {});
   }
 

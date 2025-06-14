@@ -3,7 +3,7 @@ import 'package:treecals/MainPage/NavigatorBar.dart';
 import 'package:treecals/Services/User.dart';
 
 class EditdataPage extends StatefulWidget {
-  final int ID;
+  final String ID; // เปลี่ยน int เป็น String
   const EditdataPage({super.key, required this.ID});
 
   @override
@@ -12,7 +12,7 @@ class EditdataPage extends StatefulWidget {
 
 class _EditdataPageState extends State<EditdataPage> {
   UserService userService = UserService();
-  late int _ID;
+  late String _ID; // เปลี่ยน int เป็น String
   TextEditingController Fname = TextEditingController();
   TextEditingController Lname = TextEditingController();
   TextEditingController email = TextEditingController();
@@ -29,7 +29,7 @@ class _EditdataPageState extends State<EditdataPage> {
   }
 
   void readData() async {
-    final userData = await userService.UserData(_ID);
+    final userData = await userService.UserData(_ID); // ส่ง String
     if (userData != null) {
       Fname.text = "${userData['Firstname']}";
       Lname.text = "${userData['Lastname']}";
@@ -83,8 +83,10 @@ class _EditdataPageState extends State<EditdataPage> {
                                   Navigator.pushAndRemoveUntil(
                                     context,
                                     MaterialPageRoute(
-                                      builder: (context) =>
-                                          NavigatorPage(state1: 3, ID: _ID),
+                                      builder: (context) => NavigatorPage(
+                                        state1: 3,
+                                        ID: _ID,
+                                      ), // ส่ง String
                                     ),
                                     (route) => false,
                                   );
@@ -240,7 +242,7 @@ class _EditdataPageState extends State<EditdataPage> {
                       String address1 = address.text.toString();
 
                       final result = await userService.updateUserData(
-                        _ID,
+                        _ID, // ส่ง String
                         firstname,
                         lastname,
                         email1,

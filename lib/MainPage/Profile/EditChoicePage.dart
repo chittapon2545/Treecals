@@ -4,7 +4,7 @@ import 'package:treecals/MainPage/Profile/EditDataPage.dart';
 import 'package:treecals/MainPage/Profile/EditPassPage.dart';
 
 class ChoicePage extends StatefulWidget {
-  final int ID;
+  final String ID; // เปลี่ยน int เป็น String
   const ChoicePage({super.key, required this.ID});
 
   @override
@@ -12,7 +12,7 @@ class ChoicePage extends StatefulWidget {
 }
 
 class _ChoicePageState extends State<ChoicePage> {
-  late int _ID;
+  late String _ID; // เปลี่ยน int เป็น String
   @override
   void initState() {
     super.initState();
@@ -64,8 +64,10 @@ class _ChoicePageState extends State<ChoicePage> {
                                   Navigator.pushAndRemoveUntil(
                                     context,
                                     MaterialPageRoute(
-                                      builder: (context) =>
-                                          NavigatorPage(state1: 3, ID: _ID),
+                                      builder: (context) => NavigatorPage(
+                                        state1: 3,
+                                        ID: _ID,
+                                      ), // ส่ง String
                                     ),
                                     (route) => false,
                                   );
@@ -104,7 +106,8 @@ class _ChoicePageState extends State<ChoicePage> {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (context) => EditdataPage(ID: _ID),
+                          builder: (context) =>
+                              EditdataPage(ID: _ID), // ส่ง String
                         ),
                       );
                     },
@@ -133,7 +136,8 @@ class _ChoicePageState extends State<ChoicePage> {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (context) => EditpassPage(ID: _ID),
+                          builder: (context) =>
+                              EditpassPage(ID: _ID), // ส่ง String
                         ),
                       );
                     },

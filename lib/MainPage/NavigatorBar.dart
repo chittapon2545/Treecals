@@ -5,7 +5,7 @@ import 'package:treecals/MainPage/Tree/TreePage.dart';
 
 class NavigatorPage extends StatefulWidget {
   final int state1;
-  final int ID;
+  final String ID;
   const NavigatorPage({super.key, required this.state1, required this.ID});
 
   @override
@@ -13,7 +13,7 @@ class NavigatorPage extends StatefulWidget {
 }
 
 class _NavigatorPageState extends State<NavigatorPage> {
-  late int _ID;
+  late String _ID;
   int _state = 0;
   @override
   void initState() {
@@ -38,12 +38,11 @@ class _NavigatorPageState extends State<NavigatorPage> {
             child: Column(
               children: [
                 Container(
-                  child:
-                      _state == 1
-                          ? TreePage(ID: _ID)
-                          : _state == 2
-                          ? HomePage(ID: _ID)
-                          : ProfilePage(ID: _ID),
+                  child: _state == 1
+                      ? TreePage(ID: _ID) // ต้องส่ง String
+                      : _state == 2
+                      ? HomePage(ID: _ID)
+                      : ProfilePage(ID: _ID),
                 ),
                 SizedBox(height: 90),
               ],
