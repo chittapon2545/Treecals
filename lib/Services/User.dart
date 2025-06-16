@@ -161,4 +161,42 @@ class UserService {
       return null;
     }
   }
+
+  Future<void> insertUserAutoKey(
+    String firstname,
+    String lastname,
+    String username,
+    String password,
+    String email,
+    String address,
+    String phone,
+  ) async {
+    final snapshot = await _userRef.get();
+
+    int maxNumber = 0;
+
+    if (snapshot.exists && snapshot.value is Map) {
+      final data = Map<String, dynamic>.from(snapshot.value as Map);
+
+      for (var key in data.keys) {
+        // ดึงเลขจาก key เช่น U1 => 1
+        final number = int.tryParse(key.replaceAll('U', '')) ?? 0;
+        if (number > maxNumber) {
+          maxNumber = number;
+        }
+      }
+    }
+
+    final newKey = 'U${maxNumber + 1}';
+
+    await _userRef.child(newKey).set({
+      'Firstname': firstname,
+      'Lastname': lastname,
+      'Username': username,
+      'Password_hash': password,
+      'Email': email,
+      'Address': address,
+      'Phone': phone,
+    });
+  }
 }

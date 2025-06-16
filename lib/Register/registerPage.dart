@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:treecals/Login/loginPage.dart';
 import 'package:treecals/Register/Widget/registerWidget1.dart';
 import 'package:treecals/Register/Widget/registerWidget2.dart';
+import 'package:treecals/Services/ConvertPassword.dart';
 import 'package:treecals/Services/User.dart';
 
 class RegisterPage extends StatefulWidget {
@@ -12,10 +13,17 @@ class RegisterPage extends StatefulWidget {
 }
 
 class _RegisterPageState extends State<RegisterPage> {
+  ConvertPassword _convertPassword = ConvertPassword();
   UserService _userService = UserService();
   int _state = 1;
 
+  TextEditingController _fname = TextEditingController();
+  TextEditingController _lname = TextEditingController();
+  TextEditingController _username = TextEditingController();
   TextEditingController _password = TextEditingController();
+  TextEditingController _password2 = TextEditingController();
+  TextEditingController _email = TextEditingController();
+  TextEditingController _address = TextEditingController();
   TextEditingController _phone = TextEditingController();
 
   @override
@@ -121,88 +129,110 @@ class _RegisterPageState extends State<RegisterPage> {
                             ),
                           ),
                           alignment: Alignment.topCenter,
-                          child: SingleChildScrollView(
-                            child: Column(
-                              children: [
-                                // ไม่ต้องใช้ Expanded
-                                _state == 1
-                                    ? RegisWidget1(password: _password)
+                          child: Column(
+                            children: [
+                              Expanded(
+                                child: _state == 1
+                                    ? RegisWidget1(
+                                        fname: _fname,
+                                        lname: _lname,
+                                        username: _username,
+                                        password: _password,
+                                        password2: _password2,
+                                        address: _address,
+                                        email: _email,
+                                      )
                                     : RegisWidget2(phone: _phone),
-                                SizedBox(height: 40),
-                                Padding(
-                                  padding: EdgeInsets.symmetric(horizontal: 50),
-                                  child: Container(
-                                    width:
-                                        MediaQuery.of(context).size.width - 100,
-                                    height: 60,
-                                    child: Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.spaceBetween,
-                                      children: [
-                                        SizedBox(
-                                          width:
-                                              MediaQuery.of(
-                                                    context,
-                                                  ).size.width /
-                                                  2 -
-                                              60,
-                                          height: 50,
-                                          child: TextButton(
-                                            onPressed: () {
-                                              setState(() {
-                                                if (_state == 1) {
-                                                  Navigator.pushAndRemoveUntil(
-                                                    context,
-                                                    MaterialPageRoute(
-                                                      builder: (context) =>
-                                                          LoginPage(),
-                                                    ),
-                                                    (route) => false,
-                                                  );
-                                                } else {
-                                                  _state = 1;
-                                                }
-                                              });
-                                            },
-                                            child: Text(
-                                              _state == 1
-                                                  ? "ยกเลิก"
-                                                  : "ย้อนกลับ",
-                                              style: TextStyle(
-                                                color: Colors.black,
-                                                fontSize: 16,
-                                                fontWeight: FontWeight.bold,
-                                              ),
+                              ),
+                              SizedBox(height: 40),
+                              Padding(
+                                padding: EdgeInsets.symmetric(horizontal: 50),
+                                child: Container(
+                                  width:
+                                      MediaQuery.of(context).size.width - 100,
+                                  height: 60,
+                                  child: Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      SizedBox(
+                                        width:
+                                            MediaQuery.of(context).size.width /
+                                                2 -
+                                            60,
+                                        height: 50,
+                                        child: TextButton(
+                                          onPressed: () {
+                                            setState(() {
+                                              if (_state == 1) {
+                                                Navigator.pushAndRemoveUntil(
+                                                  context,
+                                                  MaterialPageRoute(
+                                                    builder: (context) =>
+                                                        LoginPage(),
+                                                  ),
+                                                  (route) => false,
+                                                );
+                                              } else {
+                                                _state = 1;
+                                              }
+                                            });
+                                          },
+                                          child: Text(
+                                            _state == 1 ? "ยกเลิก" : "ย้อนกลับ",
+                                            style: TextStyle(
+                                              color: Colors.black,
+                                              fontSize: 16,
+                                              fontWeight: FontWeight.bold,
                                             ),
-                                            style: TextButton.styleFrom(
-                                              backgroundColor: Colors.white,
-                                              side: BorderSide(
-                                                color: Colors.white,
-                                                width: 0,
-                                              ),
-                                              shape: RoundedRectangleBorder(
-                                                borderRadius:
-                                                    BorderRadius.circular(15),
-                                              ),
+                                          ),
+                                          style: TextButton.styleFrom(
+                                            backgroundColor: Colors.white,
+                                            side: BorderSide(
+                                              color: Colors.white,
+                                              width: 0,
+                                            ),
+                                            shape: RoundedRectangleBorder(
+                                              borderRadius:
+                                                  BorderRadius.circular(15),
                                             ),
                                           ),
                                         ),
-                                        SizedBox(
-                                          width:
-                                              MediaQuery.of(
-                                                    context,
-                                                  ).size.width /
-                                                  2 -
-                                              60,
-                                          height: 50,
-                                          child: TextButton(
-                                            onPressed: () async {
-                                              String password = _password.text
-                                                  .trim();
-                                              String? checkPassword =
-                                                  await _userService
-                                                      .checkPassword(password);
-                                              if (checkPassword == null) {
+                                      ),
+                                      SizedBox(
+                                        width:
+                                            MediaQuery.of(context).size.width /
+                                                2 -
+                                            60,
+                                        height: 50,
+                                        child: TextButton(
+                                          onPressed: () async {
+                                            String password = _password.text
+                                                .trim();
+                                            String fName = _fname.text.trim();
+                                            String lname = _lname.text.trim();
+                                            String username = _username.text
+                                                .trim();
+                                            String password2 = _password2.text
+                                                .trim();
+                                            String address = _address.text
+                                                .trim();
+                                            String email = _email.text.trim();
+                                            String phone = _phone.text.trim();
+                                            String? checkPassword =
+                                                await _userService
+                                                    .checkPassword(password);
+
+                                            if (_state == 1) {
+                                              if (checkPassword == null &&
+                                                  fName.isNotEmpty &&
+                                                  lname.isNotEmpty &&
+                                                  username.isNotEmpty &&
+                                                  password.isNotEmpty &&
+                                                  password2.isNotEmpty &&
+                                                  email.isNotEmpty &&
+                                                  address.isNotEmpty &&
+                                                  password == password2) {
                                                 setState(() {
                                                   if (_state == 1) {
                                                     _state = 2;
@@ -223,40 +253,64 @@ class _RegisterPageState extends State<RegisterPage> {
                                                 ).showSnackBar(
                                                   SnackBar(
                                                     content: Text(
-                                                      "รหัสผ่านถูกใช้งานไปแล้ว",
+                                                      "ข้อมูลไม่ถูกต้อง",
                                                     ),
                                                   ),
                                                 );
                                               }
-                                            },
-                                            child: Text(
-                                              _state == 1 ? "ถัดไป" : "ยืนยัน",
-                                              style: TextStyle(
-                                                color: Colors.black,
-                                                fontSize: 16,
-                                                fontWeight: FontWeight.bold,
-                                              ),
+                                            } else {
+                                              if (phone.length == 10) {
+                                                password = _convertPassword
+                                                    .hashPassword(password);
+                                                _userService.insertUserAutoKey(
+                                                  fName,
+                                                  lname,
+                                                  username,
+                                                  password,
+                                                  email,
+                                                  address,
+                                                  phone,
+                                                );
+                                              } else {
+                                                ScaffoldMessenger.of(
+                                                  context,
+                                                ).showSnackBar(
+                                                  SnackBar(
+                                                    content: Text(
+                                                      "ข้อมูลไม่ถูกต้อง",
+                                                    ),
+                                                  ),
+                                                );
+                                              }
+                                            }
+                                          },
+                                          child: Text(
+                                            _state == 1 ? "ถัดไป" : "ยืนยัน",
+                                            style: TextStyle(
+                                              color: Colors.black,
+                                              fontSize: 16,
+                                              fontWeight: FontWeight.bold,
                                             ),
-                                            style: TextButton.styleFrom(
-                                              backgroundColor: Colors.white,
-                                              side: BorderSide(
-                                                color: Colors.white,
-                                                width: 0,
-                                              ),
-                                              shape: RoundedRectangleBorder(
-                                                borderRadius:
-                                                    BorderRadius.circular(15),
-                                              ),
+                                          ),
+                                          style: TextButton.styleFrom(
+                                            backgroundColor: Colors.white,
+                                            side: BorderSide(
+                                              color: Colors.white,
+                                              width: 0,
+                                            ),
+                                            shape: RoundedRectangleBorder(
+                                              borderRadius:
+                                                  BorderRadius.circular(15),
                                             ),
                                           ),
                                         ),
-                                      ],
-                                    ),
+                                      ),
+                                    ],
                                   ),
                                 ),
-                                SizedBox(height: 20),
-                              ],
-                            ),
+                              ),
+                              SizedBox(height: 20),
+                            ],
                           ),
                         ),
                       ),

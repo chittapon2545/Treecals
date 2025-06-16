@@ -20,4 +20,9 @@ class ConvertPassword {
       await _userRef.child(ID).update({'Password_hash': hashedPassword});
     }
   }
+
+  String hashPassword(String password) {
+    final hashed = BCrypt.hashpw(password, BCrypt.gensalt());
+    return hashed;
+  }
 }

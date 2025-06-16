@@ -1,8 +1,23 @@
 import 'package:flutter/material.dart';
 
 class RegisWidget1 extends StatefulWidget {
+  final TextEditingController fname;
+  final TextEditingController lname;
+  final TextEditingController username;
   final TextEditingController password;
-  const RegisWidget1({super.key, required this.password});
+  final TextEditingController password2;
+  final TextEditingController address;
+  final TextEditingController email;
+  const RegisWidget1({
+    super.key,
+    required this.fname,
+    required this.lname,
+    required this.username,
+    required this.password,
+    required this.password2,
+    required this.address,
+    required this.email,
+  });
 
   @override
   State<RegisWidget1> createState() => _RegisWidget1State();
@@ -11,10 +26,22 @@ class RegisWidget1 extends StatefulWidget {
 class _RegisWidget1State extends State<RegisWidget1> {
   bool _obscureText = true;
   TextEditingController _PasswordEditingController = TextEditingController();
+  TextEditingController _firstnameEditController = TextEditingController();
+  TextEditingController _lastnameEditController = TextEditingController();
+  TextEditingController _usernameEditController = TextEditingController();
+  TextEditingController _password2EditController = TextEditingController();
+  TextEditingController _addressEditController = TextEditingController();
+  TextEditingController _emailEditController = TextEditingController();
   @override
   void initState() {
     super.initState();
     _PasswordEditingController = widget.password;
+    _firstnameEditController = widget.fname;
+    _lastnameEditController = widget.lname;
+    _usernameEditController = widget.username;
+    _password2EditController = widget.password2;
+    _addressEditController = widget.address;
+    _emailEditController = widget.email;
   }
 
   @override
@@ -30,6 +57,7 @@ class _RegisWidget1State extends State<RegisWidget1> {
                 child: SizedBox(
                   width: MediaQuery.of(context).size.width / 2 - 50,
                   child: TextField(
+                    controller: _firstnameEditController,
                     style: TextStyle(color: Colors.black),
                     decoration: InputDecoration(
                       filled: true,
@@ -52,6 +80,7 @@ class _RegisWidget1State extends State<RegisWidget1> {
                 child: SizedBox(
                   width: MediaQuery.of(context).size.width / 2 - 50,
                   child: TextField(
+                    controller: _lastnameEditController,
                     style: TextStyle(color: Colors.black),
                     decoration: InputDecoration(
                       filled: true,
@@ -76,6 +105,7 @@ class _RegisWidget1State extends State<RegisWidget1> {
             child: SizedBox(
               width: MediaQuery.of(context).size.width,
               child: TextField(
+                controller: _usernameEditController,
                 style: TextStyle(color: Colors.black),
                 decoration: InputDecoration(
                   filled: true,
@@ -132,6 +162,7 @@ class _RegisWidget1State extends State<RegisWidget1> {
             child: SizedBox(
               width: MediaQuery.of(context).size.width,
               child: TextField(
+                controller: _password2EditController,
                 style: TextStyle(color: Colors.black),
                 obscureText: _obscureText,
                 decoration: InputDecoration(
@@ -155,6 +186,7 @@ class _RegisWidget1State extends State<RegisWidget1> {
             child: SizedBox(
               width: MediaQuery.of(context).size.width,
               child: TextField(
+                controller: _emailEditController,
                 style: TextStyle(color: Colors.black),
                 decoration: InputDecoration(
                   filled: true,
@@ -178,6 +210,7 @@ class _RegisWidget1State extends State<RegisWidget1> {
               width: MediaQuery.of(context).size.width,
               height: 100,
               child: TextField(
+                controller: _addressEditController,
                 style: TextStyle(color: Colors.black),
                 maxLines: null,
                 keyboardType: TextInputType.multiline,
