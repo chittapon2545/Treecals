@@ -271,6 +271,14 @@ class _RegisterPageState extends State<RegisterPage> {
                                                   address,
                                                   phone,
                                                 );
+                                                Navigator.pushAndRemoveUntil(
+                                                  context,
+                                                  MaterialPageRoute(
+                                                    builder: (context) =>
+                                                        LoginPage(),
+                                                  ),
+                                                  (route) => false,
+                                                );
                                               } else {
                                                 ScaffoldMessenger.of(
                                                   context,
