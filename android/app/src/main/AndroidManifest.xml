@@ -3,6 +3,10 @@
         android:label="treecals"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
+        <meta-data
+            android:name="com.google.android.geo.API_KEY"
+            android:value="AIzaSyDPeleLrkQAfuw3FzasbDCpQW8_frWfdzw"
+        />
         <activity
             android:name=".MainActivity"
             android:exported="true"

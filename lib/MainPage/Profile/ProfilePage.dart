@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:treecals/Login/loginPage.dart';
 import 'package:treecals/MainPage/Profile/EditChoicePage.dart';
+import 'package:treecals/Services/AutoLogin.dart';
 import 'package:treecals/Services/User.dart';
 
 class ProfilePage extends StatefulWidget {
@@ -216,6 +217,7 @@ class _ProfilePageState extends State<ProfilePage> {
           height: 50,
           child: TextButton(
             onPressed: () {
+              logout();
               Navigator.pushAndRemoveUntil(
                 context,
                 MaterialPageRoute(builder: (context) => LoginPage()),

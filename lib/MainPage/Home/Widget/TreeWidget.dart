@@ -64,22 +64,12 @@ class _TreeWidgetState extends State<TreeWidget> {
               ]
             : myTrees.map((tree) {
                 return Padding(
-                  padding: EdgeInsets.only(
-                    top: 20,
-                    bottom: 10,
-                    right: 50,
-                    left: 50,
-                  ),
+                  padding: EdgeInsets.only(top: 20, right: 20, left: 20),
                   child: TextButton(
                     onPressed: () {},
                     child: Container(
-                      width: MediaQuery.of(context).size.width - 100,
-                      margin: EdgeInsets.only(
-                        left: 0,
-                        right: 8,
-                        top: 8,
-                        bottom: 8,
-                      ),
+                      width: MediaQuery.of(context).size.width,
+
                       padding: EdgeInsets.all(16),
                       decoration: BoxDecoration(
                         color: Colors.white,
@@ -120,7 +110,7 @@ class _TreeWidgetState extends State<TreeWidget> {
                           ),
                           Padding(
                             padding: EdgeInsets.only(right: 20),
-                            child: Icon(Icons.arrow_forward),
+                            child: Icon(Icons.arrow_forward, size: 24),
                           ),
                         ],
                       ),
