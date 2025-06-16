@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:treecals/MainPage/Home/Widget/PlotWidget.dart';
+import 'package:treecals/MainPage/Home/Widget/TreeWidget.dart';
 import 'package:treecals/Services/User.dart';
 import 'package:treecals/Services/Individaultree.dart';
 
@@ -186,72 +188,7 @@ class _HomePageState extends State<HomePage> {
             color: const Color.fromARGB(255, 231, 223, 223),
             borderRadius: BorderRadius.only(topLeft: Radius.circular(100)),
           ),
-          child: _state == 2
-              ? SingleChildScrollView(
-                  child: Column(
-                    children: myTrees.isEmpty
-                        ? [
-                            Padding(
-                              padding: const EdgeInsets.all(20.0),
-                              child: Text(
-                                "ยังไม่มีข้อมูลต้นไม้เดี่ยว",
-                                style: TextStyle(
-                                  fontSize: 18,
-                                  color: Colors.grey,
-                                ),
-                              ),
-                            ),
-                          ]
-                        : myTrees.map((tree) {
-                            return Container(
-                              width: MediaQuery.of(context).size.width - 100,
-                              margin: EdgeInsets.only(
-                                left: 0,
-                                right: 8,
-                                top: 8,
-                                bottom: 8,
-                              ),
-                              padding: EdgeInsets.all(16),
-                              decoration: BoxDecoration(
-                                color: Colors.white,
-                                borderRadius: BorderRadius.circular(20),
-                                boxShadow: [
-                                  BoxShadow(
-                                    color: Colors.black12,
-                                    blurRadius: 4,
-                                    offset: Offset(0, 2),
-                                  ),
-                                ],
-                              ),
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    "ชื่อ: ${tree['tree']?['name'] ?? '-'}",
-                                    style: TextStyle(
-                                      fontSize: 18,
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                                  ),
-                                  Text(
-                                    "เส้นรอบวง: ${tree['tree']?['Circumference'] ?? '-'} ซม.",
-                                  ),
-                                  Text(
-                                    "ความสูง: ${tree['tree']?['Height'] ?? '-'} ม.",
-                                  ),
-                                  Text(
-                                    "สายพันธุ์:  ${tree['groupName'] ?? '-'}",
-                                  ),
-                                  Text(
-                                    "คาร์บอนเครดิต: ${tree['credit']?['Credit'] ?? '-'}",
-                                  ),
-                                ],
-                              ),
-                            );
-                          }).toList(),
-                  ),
-                )
-              : Container(), // กรณี _state != 2 ไม่แสดงอะไร
+          child: _state == 1 ? PlotWidget(ID: _ID) : TreeWidget(ID: _ID),
         ),
       ],
     );
