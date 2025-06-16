@@ -14,69 +14,19 @@ class _AddTreePageState extends State<AddTreePage> {
   final _nameController = TextEditingController();
   final _circumferenceController = TextEditingController();
   final _heightController = TextEditingController();
-  final _groupIdController = TextEditingController();
   final _latitudeController = TextEditingController();
   final _longitudeController = TextEditingController();
-
   final DatabaseReference _dbRef = FirebaseDatabase.instance.ref();
 
-  Future<void> _addTree() async {
-    try {
-      if (_formKey.currentState!.validate()) {
-        // 1. เพิ่ม locationindividualtrees ก่อน
-        DatabaseReference locationRef = _dbRef.child('locationindividualtrees');
-        DatabaseReference treesRef = _dbRef.child('individualtrees');
-
-        // 2. อ่าน Itree ล่าสุด
-        DataSnapshot snapshot = await treesRef.get();
-        int newTreeNum = 1;
-        if (snapshot.exists) {
-          final keys = (snapshot.value as Map).keys
-              .where((k) => k.toString().startsWith('Itree'))
-              .map((k) => int.tryParse(k.toString().replaceFirst('Itree', '')))
-              .where((n) => n != null)
-              .toList();
-          if (keys.isNotEmpty) {
-            keys.sort();
-            newTreeNum = keys.last! + 1;
-          }
-        }
-        final newTreeKey = "Itree$newTreeNum";
-
-        // 3. เพิ่ม locationindividualtrees แล้วเก็บ key
-        DatabaseReference newLocationRef = locationRef.push();
-        await newLocationRef.set({
-          "TreeID": "Itree$newTreeNum",
-          "Latitude": double.tryParse(_latitudeController.text) ?? 0,
-          "Longitude": double.tryParse(_longitudeController.text) ?? 0,
-        });
-        String locationId = newLocationRef.key!;
-
-        // 4. เพิ่ม individualtrees โดยใช้ key ที่กำหนดเอง
-        await treesRef.child(newTreeKey).set({
-          "Circumference": double.tryParse(_circumferenceController.text) ?? 0,
-          "Group_ID": int.tryParse(_groupIdController.text) ?? 1,
-          "Height": double.tryParse(_heightController.text) ?? 0,
-          "LocationId": locationId,
-          "UserID": widget.ID,
-          "name": _nameController.text,
-        });
-
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text('เพิ่มข้อมูลต้นไม้สำเร็จ')));
-        Navigator.pop(context);
-        _formKey.currentState!.reset();
-      }
-    } catch (e) {
-      print('เกิดข้อผิดพลาด: $e');
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text('เกิดข้อผิดพลาด: $e')));
-    }
-  }
+  List<Map<String, String>> _groups = [];
+  String? _selectedGroupId;
 
   @override
+  void initState() {
+    super.initState();
+    _loadGroups();
+  }
+
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: Text('เพิ่มต้นไม้')),
@@ -105,12 +55,23 @@ class _AddTreePageState extends State<AddTreePage> {
                 validator: (value) =>
                     value!.isEmpty ? 'กรุณากรอกความสูง' : null,
               ),
-              TextFormField(
-                controller: _groupIdController,
-                decoration: InputDecoration(labelText: 'ชนิด'),
-                keyboardType: TextInputType.number,
-                validator: (value) =>
-                    value!.isEmpty ? 'กรุณากรอก Group_ID' : null,
+              DropdownButtonFormField<String>(
+                value: _selectedGroupId,
+                decoration: InputDecoration(labelText: 'ชนิด (Group)'),
+                items: _groups
+                    .map(
+                      (group) => DropdownMenuItem<String>(
+                        value: group['id'],
+                        child: Text(group['name'] ?? ''),
+                      ),
+                    )
+                    .toList(),
+                onChanged: (value) {
+                  setState(() {
+                    _selectedGroupId = value;
+                  });
+                },
+                validator: (value) => value == null ? 'กรุณาเลือกชนิด' : null,
               ),
               TextFormField(
                 controller: _latitudeController,
@@ -133,5 +94,76 @@ class _AddTreePageState extends State<AddTreePage> {
         ),
       ),
     );
+  }
+
+  Future<void> _addTree() async {
+    try {
+      if (_formKey.currentState!.validate()) {
+        DatabaseReference locationRef = _dbRef.child('locationindividualtrees');
+        DatabaseReference treesRef = _dbRef.child('individualtrees');
+
+        // 2. อ่าน Itree ล่าสุด
+        DataSnapshot snapshot = await treesRef.get();
+        int newTreeNum = 1;
+        if (snapshot.exists) {
+          final keys = (snapshot.value as Map).keys
+              .where((k) => k.toString().startsWith('Itree'))
+              .map((k) => int.tryParse(k.toString().replaceFirst('Itree', '')))
+              .where((n) => n != null)
+              .toList();
+          if (keys.isNotEmpty) {
+            keys.sort();
+            newTreeNum = keys.last! + 1;
+          }
+        }
+
+        final newTreeKey = "Itree$newTreeNum";
+        final newLocationKey = "Lo$newTreeNum";
+
+        // 3. เพิ่ม locationindividualtrees แล้วเก็บ key
+        // ใช้ key ที่กำหนดเอง
+        await locationRef.child(newLocationKey).set({
+          "TreeID": newTreeKey,
+          "Latitude": double.tryParse(_latitudeController.text) ?? 0,
+          "Longitude": double.tryParse(_longitudeController.text) ?? 0,
+        });
+
+        // 4. เพิ่ม individualtrees โดยใช้ key ที่กำหนดเอง
+        await treesRef.child(newTreeKey).set({
+          "Circumference": double.tryParse(_circumferenceController.text) ?? 0,
+          "Group_ID": _selectedGroupId,
+          "Height": double.tryParse(_heightController.text) ?? 0,
+          "LocationId": newLocationKey,
+          "UserID": widget.ID,
+          "name": _nameController.text,
+        });
+
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('เพิ่มข้อมูลต้นไม้สำเร็จ')));
+        Navigator.pop(context);
+        _formKey.currentState!.reset();
+      }
+    } catch (e) {
+      print('เกิดข้อผิดพลาด: $e');
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('เกิดข้อผิดพลาด: $e')));
+    }
+  }
+
+  Future<void> _loadGroups() async {
+    final groupRef = _dbRef.child('groups');
+    final snapshot = await groupRef.get();
+    if (snapshot.exists) {
+      final data = snapshot.value as Map;
+      setState(() {
+        _groups = data.entries
+            .map<Map<String, String>>(
+              (e) => {'id': e.key, 'name': e.value['name'] ?? ''},
+            )
+            .toList();
+      });
+    }
   }
 }
