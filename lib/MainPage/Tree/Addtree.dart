@@ -121,7 +121,7 @@ class _AddTreePageState extends State<AddTreePage> {
         final newLocationKey = "Lo$newTreeNum";
 
         // 3. เพิ่ม locationindividualtrees แล้วเก็บ key
-        // ใช้ key ที่กำหนดเอง
+
         await locationRef.child(newLocationKey).set({
           "TreeID": newTreeKey,
           "Latitude": double.tryParse(_latitudeController.text) ?? 0,
