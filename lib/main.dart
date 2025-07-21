@@ -1,8 +1,6 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:treecals/Login/loginPage.dart';
 import 'package:treecals/MainPage/Tree/MyMap.dart';
 import 'package:treecals/SplashScreen.dart';
 
@@ -37,7 +35,7 @@ class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(title: 'Flutter Demo', home: SplashScreen());
-    // return MaterialApp(title: 'Flutter Demo', home: MyMapPage());
+    // return MaterialApp(title: 'Flutter Demo', home: SplashScreen());
+    return MaterialApp(title: 'Flutter Demo', home: MyMapPage());
   }
 }

@@ -1,12 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
-class MyMapPage extends StatefulWidget {
+class AddtreesMap extends StatefulWidget {
+  const AddtreesMap({super.key});
+
   @override
-  _MyMapPageState createState() => _MyMapPageState();
+  State<AddtreesMap> createState() => _AddtreesMapState();
 }
 
-class _MyMapPageState extends State<MyMapPage> {
+class _AddtreesMapState extends State<AddtreesMap> {
   late GoogleMapController mapController;
 
   final Set<Marker> _markers = {};

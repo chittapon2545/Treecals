@@ -1,17 +1,21 @@
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
-class MyMapPage extends StatefulWidget {
+class AddplotMap extends StatefulWidget {
+  const AddplotMap({super.key});
+
   @override
-  _MyMapPageState createState() => _MyMapPageState();
+  State<AddplotMap> createState() => _AddplotMapState();
 }
 
-class _MyMapPageState extends State<MyMapPage> {
+class _AddplotMapState extends State<AddplotMap> {
   late GoogleMapController mapController;
 
   final Set<Marker> _markers = {};
+  final Set<Polyline> _polylines = {};
   final List<LatLng> _markersPoints = [];
   int _MakerIdCounter = 1;
+  bool check = false;
 
   final LatLng _center = const LatLng(13.7563, 100.5018); // กรุงเทพ
 
@@ -19,9 +23,29 @@ class _MyMapPageState extends State<MyMapPage> {
     mapController = controller;
   }
 
+  void _drawPolyline() {
+    if (_markers.length < 2) return; // ต้องมีอย่างน้อย 2 จุด
+
+    final List<LatLng> points = _markers.map((m) => m.position).toList();
+
+    points.add(points.first);
+
+    setState(() {
+      check = true;
+      _polylines.clear();
+      _polylines.add(
+        Polyline(
+          polylineId: PolylineId('polyline'),
+          points: points,
+          color: Colors.blue,
+          width: 4,
+        ),
+      );
+    });
+  }
+
   void _handleTap(LatLng tappedPoint) {
-    _markers.clear();
-    if (_markers.isEmpty) {
+    if (!check) {
       setState(() {
         final markerId = MarkerId('marker_${_MakerIdCounter++}');
         _markers.add(
@@ -40,9 +64,6 @@ class _MyMapPageState extends State<MyMapPage> {
           'Lat: ${_markersPoints.last.latitude}, Lng: ${_markersPoints.last.longitude}',
         );
       });
-    } else {
-      // ถ้ามี Marker แล้ว หรือ วาดเส้นแล้ว ไม่เพิ่ม Marker ใหม่
-      print('เพิ่ม Marker ไม่ได้ เพราะมี Marker อยู่แล้วหรือวาดเส้นแล้ว');
     }
   }
 
@@ -53,9 +74,11 @@ class _MyMapPageState extends State<MyMapPage> {
         title: Text('แผนที่'),
         actions: [
           IconButton(
-            onPressed: () {},
+            onPressed: () {
+              _drawPolyline();
+            },
             icon: Icon(Icons.check),
-            tooltip: 'ยืนยันตำแหน่ง',
+            tooltip: 'ลากเส้นเชื่อมจุด',
           ),
         ],
       ),
@@ -65,6 +88,7 @@ class _MyMapPageState extends State<MyMapPage> {
             onMapCreated: _onMapCreated,
             initialCameraPosition: CameraPosition(target: _center, zoom: 10.0),
             markers: _markers,
+            polylines: _polylines,
             onTap: _handleTap,
           ),
           Positioned(
@@ -74,8 +98,10 @@ class _MyMapPageState extends State<MyMapPage> {
               onPressed: () {
                 setState(() {
                   _markers.clear();
-                  _markersPoints.clear();
+                  _polylines.clear();
                   _MakerIdCounter = 1;
+                  _markersPoints.clear();
+                  check = false;
                 });
               },
               style: ElevatedButton.styleFrom(
@@ -83,7 +109,7 @@ class _MyMapPageState extends State<MyMapPage> {
                 backgroundColor: Colors.blue,
               ),
               child: Text(
-                'ล้างตำแหน่ง',
+                'ล้างตำแหน่งทั้งหมด',
                 style: TextStyle(fontSize: 24, color: Colors.white),
               ),
             ),
