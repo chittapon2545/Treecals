@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:treecals/MainPage/Tree/Addtree.dart';
 
 class TreePage extends StatefulWidget {
@@ -204,7 +205,10 @@ class _TreePageState extends State<TreePage> {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                            builder: (context) => AddTreePage(ID: _ID),
+                            builder: (context) => AddTreePage(
+                              ID: _ID,
+                              markersPoints: [LatLng(13.7563, 100.5018)],
+                            ),
                           ),
                         );
                       },

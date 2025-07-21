@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 class AddtreesMap extends StatefulWidget {
-  const AddtreesMap({super.key});
+  final String ID;
+  final List<LatLng> markersPoints;
+  const AddtreesMap({super.key, required this.ID, required this.markersPoints});
 
   @override
   State<AddtreesMap> createState() => _AddtreesMapState();
@@ -10,6 +12,7 @@ class AddtreesMap extends StatefulWidget {
 
 class _AddtreesMapState extends State<AddtreesMap> {
   late GoogleMapController mapController;
+  String _ID = '';
 
   final Set<Marker> _markers = {};
   final List<LatLng> _markersPoints = [];
@@ -17,12 +20,18 @@ class _AddtreesMapState extends State<AddtreesMap> {
 
   final LatLng _center = const LatLng(13.7563, 100.5018); // กรุงเทพ
 
+  @override
+  void initState() {
+    super.initState();
+    _ID = widget.ID;
+    _markersPoints.addAll(widget.markersPoints);
+  }
+
   void _onMapCreated(GoogleMapController controller) {
     mapController = controller;
   }
 
   void _handleTap(LatLng tappedPoint) {
-    _markers.clear();
     if (_markers.isEmpty) {
       setState(() {
         final markerId = MarkerId('marker_${_MakerIdCounter++}');
@@ -37,13 +46,15 @@ class _AddtreesMapState extends State<AddtreesMap> {
             ),
           ),
         );
+        widget.markersPoints.clear();
+        widget.markersPoints.add(tappedPoint);
+        _markersPoints.clear();
         _markersPoints.add(tappedPoint);
         print(
-          'Lat: ${_markersPoints.last.latitude}, Lng: ${_markersPoints.last.longitude}',
+          'Lat: ${widget.markersPoints.last.latitude}, Lng: ${widget.markersPoints.last.longitude}',
         );
       });
     } else {
-      // ถ้ามี Marker แล้ว หรือ วาดเส้นแล้ว ไม่เพิ่ม Marker ใหม่
       print('เพิ่ม Marker ไม่ได้ เพราะมี Marker อยู่แล้วหรือวาดเส้นแล้ว');
     }
   }
@@ -55,7 +66,13 @@ class _AddtreesMapState extends State<AddtreesMap> {
         title: Text('แผนที่'),
         actions: [
           IconButton(
-            onPressed: () {},
+            onPressed: () {
+              setState(() {
+                _markersPoints.clear();
+                _markersPoints.add(widget.markersPoints.last);
+              });
+              Navigator.pop(context, _markersPoints);
+            },
             icon: Icon(Icons.check),
             tooltip: 'ยืนยันตำแหน่ง',
           ),
@@ -65,8 +82,24 @@ class _AddtreesMapState extends State<AddtreesMap> {
         children: <Widget>[
           GoogleMap(
             onMapCreated: _onMapCreated,
-            initialCameraPosition: CameraPosition(target: _center, zoom: 10.0),
-            markers: _markers,
+            initialCameraPosition: CameraPosition(
+              target: _markersPoints.last,
+              zoom: 20,
+            ),
+            mapType: MapType.satellite,
+            markers: _markersPoints
+                .map(
+                  (point) => Marker(
+                    markerId: MarkerId(point.toString()),
+                    position: point,
+                    infoWindow: InfoWindow(
+                      title: 'ตำแหน่งที่เลือก',
+                      snippet:
+                          'Lat: ${point.latitude}, Lng: ${point.longitude}',
+                    ),
+                  ),
+                )
+                .toSet(),
             onTap: _handleTap,
           ),
           Positioned(
@@ -77,6 +110,7 @@ class _AddtreesMapState extends State<AddtreesMap> {
                 setState(() {
                   _markers.clear();
                   _markersPoints.clear();
+                  widget.markersPoints.clear();
                   _MakerIdCounter = 1;
                 });
               },

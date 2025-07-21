@@ -86,7 +86,8 @@ class _AddplotMapState extends State<AddplotMap> {
         children: <Widget>[
           GoogleMap(
             onMapCreated: _onMapCreated,
-            initialCameraPosition: CameraPosition(target: _center, zoom: 10.0),
+            initialCameraPosition: CameraPosition(target: _center, zoom: 24),
+            mapType: MapType.satellite,
             markers: _markers,
             polylines: _polylines,
             onTap: _handleTap,
