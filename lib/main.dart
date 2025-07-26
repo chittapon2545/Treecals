@@ -23,6 +23,7 @@ void main() async {
   } catch (e) {
     // ignore duplicate app error
   }
+  String googleMapsApiKey = "AIzaSyDPeleLrkQAfuw3FzasbDCpQW8_frWfdzw";
 
   runApp(const MyApp());
 }

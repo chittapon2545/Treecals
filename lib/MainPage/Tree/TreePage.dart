@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:treecals/MainPage/Tree/Addtree.dart';
+import 'package:treecals/MainPage/Tree/Map.dart';
 
 class TreePage extends StatefulWidget {
   final String ID; // เปลี่ยน int เป็น String
@@ -139,7 +140,12 @@ class _TreePageState extends State<TreePage> {
                     padding: EdgeInsets.only(top: 20, left: 50),
                     child: TextButton(
                       style: TextButton.styleFrom(padding: EdgeInsets.zero),
-                      onPressed: () {},
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (context) => MapSample()),
+                        );
+                      },
                       child: Container(
                         width: MediaQuery.of(context).size.width - 50,
                         height: 100,
