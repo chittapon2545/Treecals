@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:treecals/MainPage/Tree/Addtree.dart';
-import 'package:treecals/MainPage/Tree/Map.dart';
+import 'package:treecals/MainPage/Tree/Mappolygon.dart';
 
 class TreePage extends StatefulWidget {
   final String ID; // เปลี่ยน int เป็น String

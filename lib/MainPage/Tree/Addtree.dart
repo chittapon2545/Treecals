@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_database/firebase_database.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:treecals/MainPage/Tree/Mappick.dart';
 
 class AddTreePage extends StatefulWidget {
   final String ID; // ต้องเป็น String
@@ -14,12 +16,11 @@ class _AddTreePageState extends State<AddTreePage> {
   final _nameController = TextEditingController();
   final _circumferenceController = TextEditingController();
   final _heightController = TextEditingController();
-  final _latitudeController = TextEditingController();
-  final _longitudeController = TextEditingController();
   final DatabaseReference _dbRef = FirebaseDatabase.instance.ref();
 
   List<Map<String, String>> _groups = [];
   String? _selectedGroupId;
+  LatLng? _selectedLatLng;
 
   @override
   void initState() {
@@ -73,19 +74,20 @@ class _AddTreePageState extends State<AddTreePage> {
                 },
                 validator: (value) => value == null ? 'กรุณาเลือกชนิด' : null,
               ),
-              TextFormField(
-                controller: _latitudeController,
-                decoration: InputDecoration(labelText: 'Latitude'),
-                keyboardType: TextInputType.number,
-                validator: (value) =>
-                    value!.isEmpty ? 'กรุณากรอก Latitude' : null,
+              SizedBox(height: 20),
+              Text(
+                'ตำแหน่งที่ตั้ง (Location)',
+                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
               ),
-              TextFormField(
-                controller: _longitudeController,
-                decoration: InputDecoration(labelText: 'Longitude'),
-                keyboardType: TextInputType.number,
-                validator: (value) =>
-                    value!.isEmpty ? 'กรุณากรอก Longitude' : null,
+              SizedBox(height: 10),
+              ListTile(
+                title: Text(
+                  _selectedLatLng == null
+                      ? 'เลือกตำแหน่งบนแผนที่'
+                      : 'Lat: ${_selectedLatLng!.latitude}, Lng: ${_selectedLatLng!.longitude}',
+                ),
+                trailing: Icon(Icons.map),
+                onTap: _pickLocation,
               ),
               SizedBox(height: 20),
               ElevatedButton(onPressed: _addTree, child: Text('บันทึก')),
@@ -99,7 +101,6 @@ class _AddTreePageState extends State<AddTreePage> {
   Future<void> _addTree() async {
     try {
       if (_formKey.currentState!.validate()) {
-        DatabaseReference locationRef = _dbRef.child('locationindividualtrees');
         DatabaseReference treesRef = _dbRef.child('individualtrees');
 
         // 2. อ่าน Itree ล่าสุด
@@ -120,20 +121,12 @@ class _AddTreePageState extends State<AddTreePage> {
         final newTreeKey = "Itree$newTreeNum";
         final newLocationKey = "Lo$newTreeNum";
 
-        // 3. เพิ่ม locationindividualtrees แล้วเก็บ key
-
-        await locationRef.child(newLocationKey).set({
-          "TreeID": newTreeKey,
-          "Latitude": double.tryParse(_latitudeController.text) ?? 0,
-          "Longitude": double.tryParse(_longitudeController.text) ?? 0,
-        });
-
-        // 4. เพิ่ม individualtrees โดยใช้ key ที่กำหนดเอง
         await treesRef.child(newTreeKey).set({
           "Circumference": double.tryParse(_circumferenceController.text) ?? 0,
           "Group_ID": _selectedGroupId,
           "Height": double.tryParse(_heightController.text) ?? 0,
-          "LocationId": newLocationKey,
+          "Latitude": _selectedLatLng?.latitude ?? 0,
+          "Longitude": _selectedLatLng?.longitude ?? 0,
           "UserID": widget.ID,
           "name": _nameController.text,
         });
@@ -163,6 +156,21 @@ class _AddTreePageState extends State<AddTreePage> {
               (e) => {'id': e.key, 'name': e.value['name'] ?? ''},
             )
             .toList();
+      });
+    }
+  }
+
+  Future<void> _pickLocation() async {
+    LatLng? result = await Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) =>
+            MapPickerPage(initialPosition: _selectedLatLng, userId: widget.ID),
+      ),
+    );
+    if (result != null) {
+      setState(() {
+        _selectedLatLng = result;
       });
     }
   }
