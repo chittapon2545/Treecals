@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:treecals/MainPage/Tree/Addfasttree.dart';
+import 'package:treecals/MainPage/Tree/Addnormalplot.dart';
 import 'package:treecals/MainPage/Tree/Addtree.dart';
 import 'package:treecals/MainPage/Tree/Mappolygon.dart';
 
@@ -79,7 +81,14 @@ class _TreePageState extends State<TreePage> {
                     padding: EdgeInsets.only(top: 70),
                     child: TextButton(
                       style: TextButton.styleFrom(padding: EdgeInsets.zero),
-                      onPressed: () {},
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => Addnormalplotpage(ID: _ID),
+                          ),
+                        );
+                      },
                       child: Container(
                         width: MediaQuery.of(context).size.width - 50,
                         height: 100,
@@ -143,7 +152,9 @@ class _TreePageState extends State<TreePage> {
                       onPressed: () {
                         Navigator.push(
                           context,
-                          MaterialPageRoute(builder: (context) => MapSample()),
+                          MaterialPageRoute(
+                            builder: (context) => Addfastplotpage(ID: _ID),
+                          ),
                         );
                       },
                       child: Container(

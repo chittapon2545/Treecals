@@ -29,138 +29,118 @@ class _RegisterPageState extends State<RegisterPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      resizeToAvoidBottomInset: true,
       extendBodyBehindAppBar: true,
-      body: Stack(
-        children: [
-          SizedBox.expand(
-            child: Image.asset(
-              "assets/images/colorbackground.jpg",
+      body: SafeArea(
+        child: Container(
+          decoration: BoxDecoration(
+            image: DecorationImage(
+              image: AssetImage("assets/images/colorbackground.jpg"),
               fit: BoxFit.cover,
             ),
           ),
-          SingleChildScrollView(
-            child: Stack(
-              children: [
-                Column(
-                  children: [
-                    Container(
-                      width: MediaQuery.of(context).size.width,
-                      height: 130,
-                      decoration: BoxDecoration(
-                        color: Color(0xFF00F6FF),
-                        borderRadius: BorderRadius.only(
-                          bottomRight: Radius.circular(100),
-                        ),
-                      ),
-                      child: Padding(
-                        padding: EdgeInsets.only(bottom: 30),
-                        child: Container(
-                          width: MediaQuery.of(context).size.width,
-                          height: 100,
+          child: LayoutBuilder(
+            builder: (context, constraints) {
+              return SingleChildScrollView(
+                child: ConstrainedBox(
+                  constraints: BoxConstraints(minHeight: constraints.maxHeight),
+                  child: IntrinsicHeight(
+                    child: Column(
+                      children: [
+                        // ส่วนหัว
+                        Container(
+                          width: double.infinity,
                           decoration: BoxDecoration(
-                            color: Color(0xFF0BF041),
+                            color: Color(0xFF00F6FF),
                             borderRadius: BorderRadius.only(
                               bottomRight: Radius.circular(100),
                             ),
                           ),
-                          padding: EdgeInsets.only(top: 35, left: 10),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            children: [
-                              Container(
-                                alignment: Alignment.centerLeft,
-                                width: 50,
-                                height: 20,
-                                child: IconButton(
-                                  onPressed: () {
-                                    Navigator.pushAndRemoveUntil(
-                                      context,
-                                      MaterialPageRoute(
-                                        builder: (context) => LoginPage(),
-                                      ),
-                                      (route) => false,
-                                    );
-                                  },
-                                  icon: Icon(Icons.arrow_back, size: 30),
-                                  style: ButtonStyle(
-                                    iconColor: MaterialStateProperty.all<Color>(
-                                      Colors.white,
+                          child: Padding(
+                            padding: const EdgeInsets.only(bottom: 20),
+                            child: Container(
+                              width: double.infinity,
+                              decoration: BoxDecoration(
+                                color: Color(0xFF0BF041),
+                                borderRadius: BorderRadius.only(
+                                  bottomRight: Radius.circular(100),
+                                ),
+                              ),
+                              padding: EdgeInsets.only(top: 20, left: 10),
+                              child: Row(
+                                children: [
+                                  IconButton(
+                                    onPressed: () {
+                                      Navigator.pushAndRemoveUntil(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder: (context) => LoginPage(),
+                                        ),
+                                        (route) => false,
+                                      );
+                                    },
+                                    icon: Icon(Icons.arrow_back, size: 30),
+                                    color: Colors.white,
+                                  ),
+                                  SizedBox(width: 10),
+                                  Text(
+                                    'สมัครสมาชิก',
+                                    style: TextStyle(
+                                      fontSize: 26,
+                                      fontWeight: FontWeight.bold,
+                                      color: Colors.black,
                                     ),
                                   ),
-                                  padding: EdgeInsets.zero,
-                                  constraints: BoxConstraints(),
-                                ),
+                                ],
                               ),
-                              Padding(
-                                padding: EdgeInsets.only(left: 10),
-                                child: Text(
-                                  'สมัครสมาชิก',
-                                  style: TextStyle(
-                                    fontSize: 26,
-                                    fontWeight: FontWeight.bold,
-                                    color: Colors.black,
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                    ),
-                    SizedBox(height: 20),
-                    Container(
-                      width: MediaQuery.of(context).size.width,
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.only(
-                          topLeft: Radius.circular(100),
-                        ),
-                      ),
-                      child: Padding(
-                        padding: EdgeInsets.only(top: 30),
-                        child: Container(
-                          width: MediaQuery.of(context).size.width,
-                          height: MediaQuery.of(context).size.height - 180,
-                          decoration: BoxDecoration(
-                            color: Color(0xFF007FFF),
-                            borderRadius: BorderRadius.only(
-                              topLeft: Radius.circular(100),
                             ),
                           ),
-                          alignment: Alignment.topCenter,
-                          child: Column(
-                            children: [
-                              Expanded(
-                                child: _state == 1
-                                    ? RegisWidget1(
-                                        fname: _fname,
-                                        lname: _lname,
-                                        username: _username,
-                                        password: _password,
-                                        password2: _password2,
-                                        address: _address,
-                                        email: _email,
-                                      )
-                                    : RegisWidget2(phone: _phone),
+                        ),
+
+                        // ส่วนฟอร์ม
+                        Expanded(
+                          child: Container(
+                            width: double.infinity,
+                            decoration: BoxDecoration(
+                              color: Colors.white,
+                              borderRadius: BorderRadius.only(
+                                topLeft: Radius.circular(100),
                               ),
-                              SizedBox(height: 40),
-                              Padding(
-                                padding: EdgeInsets.symmetric(horizontal: 50),
-                                child: Container(
-                                  width:
-                                      MediaQuery.of(context).size.width - 100,
-                                  height: 60,
-                                  child: Row(
+                            ),
+                            child: Container(
+                              decoration: BoxDecoration(
+                                color: Color(0xFF007FFF),
+                                borderRadius: BorderRadius.only(
+                                  topLeft: Radius.circular(100),
+                                ),
+                              ),
+                              padding: EdgeInsets.symmetric(
+                                vertical: 30,
+                                horizontal: 20,
+                              ),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                children: [
+                                  _state == 1
+                                      ? RegisWidget1(
+                                          fname: _fname,
+                                          lname: _lname,
+                                          username: _username,
+                                          password: _password,
+                                          password2: _password2,
+                                          address: _address,
+                                          email: _email,
+                                        )
+                                      : RegisWidget2(phone: _phone),
+
+                                  SizedBox(height: 30),
+
+                                  // ปุ่ม
+                                  Row(
                                     mainAxisAlignment:
                                         MainAxisAlignment.spaceBetween,
                                     children: [
-                                      SizedBox(
-                                        width:
-                                            MediaQuery.of(context).size.width /
-                                                2 -
-                                            60,
-                                        height: 50,
+                                      Expanded(
                                         child: TextButton(
                                           onPressed: () {
                                             setState(() {
@@ -188,10 +168,6 @@ class _RegisterPageState extends State<RegisterPage> {
                                           ),
                                           style: TextButton.styleFrom(
                                             backgroundColor: Colors.white,
-                                            side: BorderSide(
-                                              color: Colors.white,
-                                              width: 0,
-                                            ),
                                             shape: RoundedRectangleBorder(
                                               borderRadius:
                                                   BorderRadius.circular(15),
@@ -199,12 +175,8 @@ class _RegisterPageState extends State<RegisterPage> {
                                           ),
                                         ),
                                       ),
-                                      SizedBox(
-                                        width:
-                                            MediaQuery.of(context).size.width /
-                                                2 -
-                                            60,
-                                        height: 50,
+                                      SizedBox(width: 20),
+                                      Expanded(
                                         child: TextButton(
                                           onPressed: () async {
                                             String password = _password.text
@@ -302,10 +274,6 @@ class _RegisterPageState extends State<RegisterPage> {
                                           ),
                                           style: TextButton.styleFrom(
                                             backgroundColor: Colors.white,
-                                            side: BorderSide(
-                                              color: Colors.white,
-                                              width: 0,
-                                            ),
                                             shape: RoundedRectangleBorder(
                                               borderRadius:
                                                   BorderRadius.circular(15),
@@ -315,20 +283,20 @@ class _RegisterPageState extends State<RegisterPage> {
                                       ),
                                     ],
                                   ),
-                                ),
+                                  SizedBox(height: 20),
+                                ],
                               ),
-                              SizedBox(height: 20),
-                            ],
+                            ),
                           ),
                         ),
-                      ),
+                      ],
                     ),
-                  ],
+                  ),
                 ),
-              ],
-            ),
+              );
+            },
           ),
-        ],
+        ),
       ),
     );
   }

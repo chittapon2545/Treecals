@@ -16,9 +16,6 @@ class IndividaultreeService {
     final treesSnapshot = await _dbRef.child('individualtrees').get();
     // ดึงข้อมูลทั้งหมดจาก node 'individualtrees' ใน Firebase
 
-    final creditSnapshot = await _dbRef.child('creditindividualtrees').get();
-    // ดึงข้อมูลทั้งหมดจาก node 'creditindividualtrees' ใน Firebase
-
     final groupsSnapshot = await _dbRef.child('groups').get();
     // ดึงข้อมูลทั้งหมดจาก node 'groups' ใน Firebase
     List<Map<String, dynamic>> result = [];
@@ -42,18 +39,6 @@ class IndividaultreeService {
       }
     }
 
-    // --- แปลง creditindividualtrees เป็น List ---
-    List creditList = [];
-    // สร้าง List เปล่าสำหรับเก็บข้อมูลเครดิต
-
-    if (creditSnapshot.value is List) {
-      creditList = creditSnapshot.value as List;
-      // ถ้าข้อมูลเครดิตเป็น List ให้นำมาใช้ตรงๆ
-    } else if (creditSnapshot.value is Map) {
-      creditList = (creditSnapshot.value as Map).values.toList();
-      // ถ้าเป็น Map ให้นำ value ทั้งหมดมาแปลงเป็น List
-    }
-
     Map<dynamic, dynamic> groupsData = {};
     if (groupsSnapshot.value is Map) {
       groupsData = groupsSnapshot.value as Map<dynamic, dynamic>;
@@ -65,27 +50,16 @@ class IndividaultreeService {
           value['UserID'] != null &&
           value['UserID'].toString() == userId.toString()) {
         // ตรวจสอบว่า value เป็น Map และมี UserID ตรงกับ userId ที่รับเข้ามา
-
-        Map<String, dynamic>? credit;
-
-        // ใช้ key (Itree1, Itree2, ...) แทน value['TreeID']
-        for (var c in creditList) {
-          // วนลูปข้อมูลเครดิตแต่ละรายการ
-
-          if (c is Map && c['TreeID']?.toString() == key.toString()) {
-            // ถ้าเครดิตเป็น Map และ TreeID ตรงกับต้นไม้
-            credit = Map<String, dynamic>.from(c);
-            // แปลงเครดิตเป็น Map<String, dynamic> แล้วเก็บไว้
-            break;
-            // เจอแล้วหยุดวนลูป
-          }
-        }
         String groupName;
         var groupId = value['Group_ID'];
         final groupKey = "${groupId.toString()}";
         groupName = groupsData[groupKey]?['name'];
 
-        result.add({'tree': value, 'credit': credit, 'groupName': groupName});
+        result.add({
+          'tree': value,
+          'credit': value['Credit'],
+          'groupName': groupName,
+        });
         // เพิ่ม Map ที่ประกอบด้วยข้อมูลต้นไม้และเครดิตลงใน result
       }
     });

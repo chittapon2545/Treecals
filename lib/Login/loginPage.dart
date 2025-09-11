@@ -185,8 +185,10 @@ class _LoginPageState extends State<LoginPage> {
                                 height: 50,
                                 child: TextButton(
                                   onPressed: () async {
-                                    String username = _usernameController.text;
-                                    String password = _passwordController.text;
+                                    String username = _usernameController.text
+                                        .trim();
+                                    String password = _passwordController.text
+                                        .trim();
                                     if (username.isEmpty || password.isEmpty) {
                                       ScaffoldMessenger.of(
                                         context,

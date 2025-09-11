@@ -67,6 +67,7 @@ class _TreeWidgetState extends State<TreeWidget> {
             itemCount: myTrees.length,
             itemBuilder: (context, index) {
               final tree = myTrees[index];
+              print(tree);
               return Padding(
                 padding: const EdgeInsets.symmetric(
                   vertical: 10,
@@ -119,7 +120,7 @@ class _TreeWidgetState extends State<TreeWidget> {
                                 softWrap: true,
                               ),
                               Text(
-                                "คาร์บอนเครดิต: ${tree['credit']?['Credit'] ?? '-'}",
+                                "คาร์บอนเครดิต: ${tree['tree']?['Credit']?.toStringAsFixed(2) ?? '-'}",
                                 overflow: TextOverflow.ellipsis,
                                 softWrap: true,
                               ),

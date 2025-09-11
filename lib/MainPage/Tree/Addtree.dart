@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:treecals/MainPage/Tree/Mappick.dart';
+import 'package:treecals/Services/Calculator.dart';
 
 class AddTreePage extends StatefulWidget {
   final String ID; // ต้องเป็น String
@@ -30,7 +31,7 @@ class _AddTreePageState extends State<AddTreePage> {
 
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('เพิ่มต้นไม้')),
+      appBar: AppBar(title: Text('เพิ่มต้นไม้เดี่ยว')),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Form(
@@ -119,16 +120,28 @@ class _AddTreePageState extends State<AddTreePage> {
         }
 
         final newTreeKey = "Itree$newTreeNum";
-        final newLocationKey = "Lo$newTreeNum";
+        final double circumference =
+            double.tryParse(_circumferenceController.text) ?? 0;
+        final double height = double.tryParse(_heightController.text) ?? 0;
 
+        final carbonResult = BiomassCalculator.calculate(
+          _selectedGroupId ?? '',
+          circumference,
+          height,
+        );
+
+        final carbon = carbonResult?.carbon ?? 0;
+        final credits = carbon * 0.85; // สมมุติว่า 1 ตันคาร์บอน = 100 เครดิต
         await treesRef.child(newTreeKey).set({
-          "Circumference": double.tryParse(_circumferenceController.text) ?? 0,
+          "Circumference": circumference,
           "Group_ID": _selectedGroupId,
-          "Height": double.tryParse(_heightController.text) ?? 0,
+          "Height": height,
           "Latitude": _selectedLatLng?.latitude ?? 0,
           "Longitude": _selectedLatLng?.longitude ?? 0,
           "UserID": widget.ID,
           "name": _nameController.text,
+          "CS": carbon,
+          "Credit": credits, // CS = Carbon Sequestration
         });
 
         ScaffoldMessenger.of(
