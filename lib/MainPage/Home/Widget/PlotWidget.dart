@@ -1,15 +1,15 @@
 import 'package:flutter/material.dart';
-import 'package:treecals/Services/PlotfastService.dart';
+import 'package:treecals/Services/PlotService.dart';
 
-class PlotfastWidget extends StatefulWidget {
+class PlotWidget extends StatefulWidget {
   final String ID;
-  const PlotfastWidget({super.key, required this.ID});
+  const PlotWidget({super.key, required this.ID});
 
   @override
-  State<PlotfastWidget> createState() => _PlotfastWidgetState();
+  State<PlotWidget> createState() => _PlotWidgetState();
 }
 
-class _PlotfastWidgetState extends State<PlotfastWidget> {
+class _PlotWidgetState extends State<PlotWidget> {
   PlotfastService plotService = PlotfastService();
   List<Map<String, dynamic>> myPlots = [];
 
@@ -20,7 +20,8 @@ class _PlotfastWidgetState extends State<PlotfastWidget> {
   }
 
   Future<void> loadPlots() async {
-    final plots = await plotService.getPlotsByUser(widget.ID);
+    final plots = await plotService.getAllPlotsByUser(widget.ID);
+    print("📌 Loaded plots: $plots");
     setState(() {
       myPlots = plots;
     });
@@ -64,6 +65,8 @@ class _PlotfastWidgetState extends State<PlotfastWidget> {
             itemCount: myPlots.length,
             itemBuilder: (context, index) {
               final plot = myPlots[index]["plot"];
+              final type = myPlots[index]["type"]; // "แปลงเร็ว" หรือ "แปลงปกติ"
+
               return Padding(
                 padding: const EdgeInsets.symmetric(
                   vertical: 10,
@@ -100,14 +103,16 @@ class _PlotfastWidgetState extends State<PlotfastWidget> {
                                 overflow: TextOverflow.ellipsis,
                                 softWrap: true,
                               ),
-                              Text("ชนิดแปลง: แปลงเร็ว"),
-                              Text("ระยะเวลา: ${plot['time'] ?? '-'} ปี"),
-                              Text(
-                                "จำนวนต้นไม้: ${plot['treenum'] ?? '-'} ต้น",
-                              ),
-                              Text(
-                                "CTT: ${(plot['CTT'] as num?)?.toStringAsFixed(2) ?? '-'}",
-                              ),
+                              if (type == "แปลงปกติ") ...{
+                                Text("ชนิดแปลง: ปกติ"),
+                                Text("ขนาดแปลง: ${plot['area'] ?? '-'} ไร่"),
+                                Text("Credit: ${plot['Credit'] ?? '-'}"),
+                              } else if (type == "แปลงเร็ว") ...{
+                                Text("ชนิดแปลง: เร็ว"),
+                                Text("ขนาดแปลง: ${plot['area'] ?? '-'} ไร่"),
+                                Text("เวลา: ${plot['time']} ปี"),
+                                Text("Credit: ${plot['Credit'] ?? '-'}"),
+                              },
                             ],
                           ),
                         ),

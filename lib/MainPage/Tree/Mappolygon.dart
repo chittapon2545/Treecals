@@ -218,13 +218,13 @@ class MapSampleState extends State<MapSample> {
 
   Future<void> _loadUserPolygons(String userId) async {
     final ref = FirebaseDatabase.instance.ref().child('plotfast');
+    final ref2 = FirebaseDatabase.instance.ref().child('Normalplot');
     final snapshot = await ref.get();
-
+    final snapshot2 = await ref2.get();
+    Set<Polygon> oldPolys = {};
+    Set<Marker> oldMarkers = {};
     if (snapshot.exists) {
       final data = snapshot.value as Map;
-      Set<Polygon> oldPolys = {};
-      Set<Marker> oldMarkers = {};
-
       data.forEach((key, value) {
         if (value is Map &&
             value['UserID'] == userId &&
@@ -244,7 +244,7 @@ class MapSampleState extends State<MapSample> {
               // สร้าง Marker สำหรับแต่ละจุด
               oldMarkers.add(
                 Marker(
-                  markerId: MarkerId("old-$key-$i"),
+                  markerId: MarkerId("plotfast-$key-$i"),
                   position: point,
                   infoWindow: InfoWindow(
                     title: value['name']?.toString() ?? '',
@@ -260,7 +260,7 @@ class MapSampleState extends State<MapSample> {
           if (points.length >= 3) {
             oldPolys.add(
               Polygon(
-                polygonId: PolygonId("old-$key"),
+                polygonId: PolygonId("plotfast-$key"),
                 points: points,
                 strokeColor: Colors.red,
                 fillColor: Colors.red.withOpacity(0.2),
@@ -270,12 +270,61 @@ class MapSampleState extends State<MapSample> {
           }
         }
       });
+    }
 
-      setState(() {
-        _oldPolygons = oldPolys;
-        _oldMarkers = oldMarkers; // อัปเดต Marker เก่า
+    if (snapshot2.exists) {
+      final data2 = snapshot2.value as Map;
+
+      data2.forEach((key, value) {
+        if (value is Map &&
+            value['UserID'] == userId &&
+            value['polygon'] != null) {
+          final List polygonList = value['polygon'];
+          List<LatLng> points = [];
+
+          for (var i = 0; i < polygonList.length; i++) {
+            var p = polygonList[i];
+            if (p['latitude'] != null && p['longitude'] != null) {
+              LatLng point = LatLng(
+                double.parse(p['latitude'].toString()),
+                double.parse(p['longitude'].toString()),
+              );
+              points.add(point);
+
+              // สร้าง Marker สำหรับแต่ละจุด
+              oldMarkers.add(
+                Marker(
+                  markerId: MarkerId("Normalplot-$key-$i"),
+                  position: point,
+                  infoWindow: InfoWindow(
+                    title: value['name']?.toString() ?? '',
+                  ),
+                  icon: BitmapDescriptor.defaultMarkerWithHue(
+                    BitmapDescriptor.hueRed,
+                  ),
+                ),
+              );
+            }
+          }
+
+          if (points.length >= 3) {
+            oldPolys.add(
+              Polygon(
+                polygonId: PolygonId("Normalplot-$key"),
+                points: points,
+                strokeColor: Colors.red,
+                fillColor: Colors.red.withOpacity(0.2),
+                strokeWidth: 2,
+              ),
+            );
+          }
+        }
       });
     }
+    setState(() {
+      _oldPolygons = oldPolys;
+      _oldMarkers = oldMarkers; // อัปเดต Marker เก่า
+    });
   }
 
   @override

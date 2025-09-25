@@ -1,5 +1,6 @@
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
+import 'package:treecals/Services/Calculator.dart';
 
 class Addtreeinplot extends StatefulWidget {
   final String plotId;
@@ -87,6 +88,47 @@ class _AddtreeinplotState extends State<Addtreeinplot> {
     Navigator.pop(context);
   }
 
+  Future<void> CalCarbonCredit() async {
+    final plotRef = treeDB.child("Normalplot/${widget.plotId}");
+    final plotsnapshot = await plotRef.get();
+    if (!plotsnapshot.exists) return;
+    final plotdata = Map<String, dynamic>.from(plotsnapshot.value as Map);
+    final double Rai = (plotdata["area"] as num).toDouble();
+    final double plotAreaM2 = Rai * 1600;
+
+    final sampleRef = plotRef.child("samplePlots");
+    final snapshot = await sampleRef.get();
+    if (!snapshot.exists) return;
+    final data = Map<String, dynamic>.from(snapshot.value as Map);
+    double totalCarbon = 0.0;
+
+    data.forEach((sampleId, sampleData) {
+      final plotArea = (sampleData["plotArea"] as num).toDouble();
+      final trees = Map<String, dynamic>.from(sampleData["trees"] ?? {});
+
+      double plotCarbon = 0;
+      trees.forEach((treeId, treeData) {
+        final circumference = (treeData["circumference"] as num).toDouble();
+        final height = (treeData["height"] as num).toDouble();
+        final result = BiomassCalculator.calculate(
+          widget.group,
+          circumference,
+          height,
+        );
+        if (result != null) {
+          plotCarbon = result.carbon + plotCarbon;
+        }
+      });
+      double density = trees.length / plotArea; //จำนวนต้น / ขนาดแปลง
+      double avgCarbonPerTree = plotCarbon / trees.length; //คาร์บอนเฉลี่ยต่อต้น
+      double carbonPerM2 = avgCarbonPerTree * density; //คาร์บอนต่อตารางเมตร
+
+      totalCarbon += carbonPerM2 * plotAreaM2; //คาร์บอนรวมของแปลง
+    });
+    double credits = totalCarbon * 3.67;
+    await plotRef.update({"CS": totalCarbon, "Credit": credits});
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -107,12 +149,25 @@ class _AddtreeinplotState extends State<Addtreeinplot> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(
-                          "แปลงตัวอย่างที่ ${plotIndex + 1}",
-                          style: TextStyle(
-                            fontWeight: FontWeight.bold,
-                            fontSize: 16,
-                          ),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text(
+                              "แปลงตัวอย่างที่ ${plotIndex + 1}",
+                              style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                fontSize: 16,
+                              ),
+                            ),
+                            IconButton(
+                              icon: Icon(Icons.delete, color: Colors.red),
+                              onPressed: () {
+                                setState(() {
+                                  samplePlots.removeAt(plotIndex);
+                                });
+                              },
+                            ),
+                          ],
                         ),
                         TextFormField(
                           controller: plot["area"],
@@ -132,8 +187,29 @@ class _AddtreeinplotState extends State<Addtreeinplot> {
                             child: Padding(
                               padding: const EdgeInsets.all(8),
                               child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  Text("ต้นไม้ตัวอย่างที่ ${treeIndex + 1}"),
+                                  Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      Text(
+                                        "ต้นไม้ตัวอย่างที่ ${treeIndex + 1}",
+                                      ),
+                                      IconButton(
+                                        icon: Icon(
+                                          Icons.delete,
+                                          color: Colors.red,
+                                        ),
+                                        onPressed: () {
+                                          setState(() {
+                                            samplePlots[plotIndex]["trees"]
+                                                .removeAt(treeIndex);
+                                          });
+                                        },
+                                      ),
+                                    ],
+                                  ),
                                   TextFormField(
                                     controller: controllers["name"],
                                     decoration: InputDecoration(
@@ -179,7 +255,10 @@ class _AddtreeinplotState extends State<Addtreeinplot> {
               ),
               SizedBox(height: 20),
               ElevatedButton(
-                onPressed: SaveSampleplot,
+                onPressed: () async {
+                  await SaveSampleplot();
+                  await CalCarbonCredit();
+                },
                 child: Text("บันทึกแปลงตัวอย่างทั้งหมด"),
               ),
             ],

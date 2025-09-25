@@ -51,8 +51,8 @@ class _AddfastplotpageState extends State<Addfastplotpage> {
 
     final treenum = int.parse(_treeNumController.text);
     final time = double.parse(_timeController.text);
-    final CTT = treenum * time * 9.5 * 0.001;
-    final Credit = CTT * 0.15;
+    final CS = treenum * time * 9.5 * 0.001;
+    final Credit = CS * 3.67;
 
     final plotRef = FirebaseDatabase.instance.ref("plotfast");
     final snapshot = await plotRef.get();
@@ -72,7 +72,7 @@ class _AddfastplotpageState extends State<Addfastplotpage> {
     final plotId = "PlotFID$nextId";
 
     final data = {
-      "CTT": CTT,
+      "CS": CS,
       "Credit": Credit,
       "area": double.parse(_areaController.text),
       "name": _nameController.text,

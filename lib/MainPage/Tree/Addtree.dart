@@ -131,7 +131,7 @@ class _AddTreePageState extends State<AddTreePage> {
         );
 
         final carbon = carbonResult?.carbon ?? 0;
-        final credits = carbon * 0.85; // สมมุติว่า 1 ตันคาร์บอน = 100 เครดิต
+        final credits = carbon * 3.67;
         await treesRef.child(newTreeKey).set({
           "Circumference": circumference,
           "Group_ID": _selectedGroupId,

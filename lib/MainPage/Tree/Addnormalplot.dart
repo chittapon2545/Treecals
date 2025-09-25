@@ -52,9 +52,9 @@ class _AddnormalplotpageState extends State<Addnormalplotpage> {
 
     final plotData = {
       "UserID": widget.ID,
-      'Name': nameController.text,
+      'name': nameController.text,
       "group": selectedGroupId,
-      'Area': double.parse(areacontroller.text),
+      'area': double.parse(areacontroller.text),
       "polygon": polygonPoints
           .map((p) => {"latitude": p.latitude, "longitude": p.longitude})
           .toList(),

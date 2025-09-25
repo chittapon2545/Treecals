@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:treecals/MainPage/Tree/editTree.dart';
 import 'package:treecals/Services/Individaultree.dart';
 
 class TreeWidget extends StatefulWidget {
@@ -67,6 +68,7 @@ class _TreeWidgetState extends State<TreeWidget> {
             itemCount: myTrees.length,
             itemBuilder: (context, index) {
               final tree = myTrees[index];
+              final treeKey = tree['id'] ?? '';
               print(tree);
               return Padding(
                 padding: const EdgeInsets.symmetric(
@@ -127,9 +129,21 @@ class _TreeWidgetState extends State<TreeWidget> {
                             ],
                           ),
                         ),
-                        Padding(
-                          padding: const EdgeInsets.only(left: 8),
-                          child: Icon(Icons.arrow_forward),
+                        IconButton(
+                          icon: Icon(Icons.arrow_forward_ios),
+                          onPressed: () async {
+                            await Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => EditTree(
+                                  userId: _ID,
+                                  treeId: treeKey,
+                                  tree: tree,
+                                ),
+                              ),
+                            );
+                            loadTrees(); // โหลดข้อมูลต้นไม้ใหม่หลังกลับมาจากหน้าแก้ไข
+                          },
                         ),
                       ],
                     ),

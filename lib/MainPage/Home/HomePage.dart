@@ -188,7 +188,7 @@ class _HomePageState extends State<HomePage> {
             color: const Color.fromARGB(255, 231, 223, 223),
             borderRadius: BorderRadius.only(topLeft: Radius.circular(100)),
           ),
-          child: _state == 1 ? PlotfastWidget(ID: _ID) : TreeWidget(ID: _ID),
+          child: _state == 1 ? PlotWidget(ID: _ID) : TreeWidget(ID: _ID),
         ),
       ],
     );

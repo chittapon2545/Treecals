@@ -2,26 +2,17 @@ import 'package:firebase_database/firebase_database.dart';
 // นำเข้าแพ็กเกจ firebase_database เพื่อใช้เชื่อมต่อและดึงข้อมูลจาก Firebase Realtime Database
 
 class IndividaultreeService {
-  // ประกาศคลาสชื่อ IndividaultreeService สำหรับจัดการข้อมูลต้นไม้แต่ละต้น
-
   final DatabaseReference _dbRef = FirebaseDatabase.instance.ref();
-  // สร้างตัวแปร _dbRef เพื่ออ้างอิง root ของ Firebase Database
 
   Future<List<Map<String, dynamic>>> getTreesAndCreditsByUser(
     dynamic userId,
   ) async {
     // ฟังก์ชันแบบ async รับ userId เพื่อค้นหาต้นไม้และเครดิตของผู้ใช้คนนั้น
     // คืนค่าเป็น Future ของ List ที่แต่ละรายการเป็น Map<String, dynamic>
-
     final treesSnapshot = await _dbRef.child('individualtrees').get();
-    // ดึงข้อมูลทั้งหมดจาก node 'individualtrees' ใน Firebase
-
     final groupsSnapshot = await _dbRef.child('groups').get();
-    // ดึงข้อมูลทั้งหมดจาก node 'groups' ใน Firebase
     List<Map<String, dynamic>> result = [];
-    // สร้างลิสต์เปล่าสำหรับเก็บผลลัพธ์
 
-    // --- แปลง individualtrees เป็น Map ---
     Map<dynamic, dynamic> treesData = {};
     // สร้าง Map เปล่าสำหรับเก็บข้อมูลต้นไม้
 
@@ -56,6 +47,7 @@ class IndividaultreeService {
         groupName = groupsData[groupKey]?['name'];
 
         result.add({
+          'id': key,
           'tree': value,
           'credit': value['Credit'],
           'groupName': groupName,
@@ -66,5 +58,17 @@ class IndividaultreeService {
 
     return result;
     // ส่งคืนผลลัพธ์ที่เป็น List ของ Map (แต่ละรายการมีข้อมูลต้นไม้และเครดิต)
+  }
+
+  Future<void> updateTree(
+    String userId,
+    String treeId,
+    Map<String, dynamic> data,
+  ) async {
+    await _dbRef.child("individualtrees/$treeId").update(data);
+  }
+
+  Future<void> deleteTree(String userId, String treeId) async {
+    await _dbRef.child("individualtrees/$treeId").remove();
   }
 }
