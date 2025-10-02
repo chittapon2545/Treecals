@@ -100,13 +100,16 @@ class _AddtreeinplotState extends State<Addtreeinplot> {
     final snapshot = await sampleRef.get();
     if (!snapshot.exists) return;
     final data = Map<String, dynamic>.from(snapshot.value as Map);
-    double totalCarbon = 0.0;
+
+    List<double> carbonDensityList = [];
+    List<double> sampleAreaList = [];
 
     data.forEach((sampleId, sampleData) {
       final plotArea = (sampleData["plotArea"] as num).toDouble();
       final trees = Map<String, dynamic>.from(sampleData["trees"] ?? {});
-
-      double plotCarbon = 0;
+      if (plotArea <= 0 || trees.isEmpty) return;
+      double plotCarbon = 0.0;
+      int treeCount = 0;
       trees.forEach((treeId, treeData) {
         final circumference = (treeData["circumference"] as num).toDouble();
         final height = (treeData["height"] as num).toDouble();
@@ -117,14 +120,42 @@ class _AddtreeinplotState extends State<Addtreeinplot> {
         );
         if (result != null) {
           plotCarbon = result.carbon + plotCarbon;
+          treeCount++;
         }
       });
+      if (treeCount == 0) return;
+
       double density = trees.length / plotArea; //จำนวนต้น / ขนาดแปลง
       double avgCarbonPerTree = plotCarbon / trees.length; //คาร์บอนเฉลี่ยต่อต้น
-      double carbonPerM2 = avgCarbonPerTree * density; //คาร์บอนต่อตารางเมตร
+      double carbonPerM2 =
+          (avgCarbonPerTree / 1000) * density; //คาร์บอนต่อตารางเมตร
 
-      totalCarbon += carbonPerM2 * plotAreaM2; //คาร์บอนรวมของแปลง
+      carbonDensityList.add(carbonPerM2);
+      sampleAreaList.add(plotArea);
     });
+    // ===== คำนวณ meanCarbonDensity =====
+    double meanCarbonDensity = 0.0;
+    if (carbonDensityList.isNotEmpty) {
+      double weightedSum = 0.0;
+      double areaSum = 0.0;
+      for (int i = 0; i < carbonDensityList.length; i++) {
+        weightedSum += carbonDensityList[i] * sampleAreaList[i];
+        areaSum += sampleAreaList[i];
+      }
+      if (areaSum > 0) {
+        meanCarbonDensity = weightedSum / areaSum; // weighted mean
+      } else {
+        meanCarbonDensity =
+            carbonDensityList.reduce((a, b) => a + b) /
+            carbonDensityList.length;
+      }
+    } else {
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('ไม่มีข้อมูลในแปลงตัวอย่าง')));
+      return;
+    }
+    double totalCarbon = meanCarbonDensity * plotAreaM2; // tC
     double credits = totalCarbon * 3.67;
     await plotRef.update({"CS": totalCarbon, "Credit": credits});
   }

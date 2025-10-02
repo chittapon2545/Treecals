@@ -131,7 +131,9 @@ class _AddTreePageState extends State<AddTreePage> {
         );
 
         final carbon = carbonResult?.carbon ?? 0;
-        final credits = carbon * 3.67;
+        final CS = carbon / 1000.0;
+        final credits = CS * 3.67;
+
         await treesRef.child(newTreeKey).set({
           "Circumference": circumference,
           "Group_ID": _selectedGroupId,
@@ -140,7 +142,7 @@ class _AddTreePageState extends State<AddTreePage> {
           "Longitude": _selectedLatLng?.longitude ?? 0,
           "UserID": widget.ID,
           "name": _nameController.text,
-          "CS": carbon,
+          "CS": CS,
           "Credit": credits, // CS = Carbon Sequestration
         });
 

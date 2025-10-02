@@ -87,13 +87,17 @@ class _EditTreeState extends State<EditTree> {
       );
       return;
     }
+    final carbon = biomass.carbon ?? 0;
+    final CS = carbon / 1000.0;
+    final credits = CS * 3.67;
 
     final updatedData = {
       'name': nameController.text,
       'Circumference': circumference,
       'Height': height,
       'Group_ID': groupId,
-      'Credit': biomass.carbon,
+      'Credit': credits,
+      'CS': CS,
       'Latitude': Location?.latitude,
       'Longitude': Location?.longitude,
     };
@@ -126,13 +130,10 @@ class _EditTreeState extends State<EditTree> {
               DropdownButtonFormField<String>(
                 value: groupId,
                 items: const [
-                  DropdownMenuItem(
-                    value: 'G1',
-                    child: Text("G1 - พรรณไม้ทั่วไป"),
-                  ),
-                  DropdownMenuItem(value: 'G2', child: Text("G2 - ปาล์ม")),
-                  DropdownMenuItem(value: 'G3', child: Text("G3 - เถาวัลย์")),
-                  DropdownMenuItem(value: 'G4', child: Text("G4 - ไผ่")),
+                  DropdownMenuItem(value: 'G1', child: Text("พรรณไม้ทั่วไป")),
+                  DropdownMenuItem(value: 'G2', child: Text("ปาล์ม")),
+                  DropdownMenuItem(value: 'G3', child: Text("เถาวัลย์")),
+                  DropdownMenuItem(value: 'G4', child: Text("ไผ่")),
                 ],
                 onChanged: (v) => setState(() => groupId = v),
                 decoration: const InputDecoration(labelText: "กลุ่มพรรณไม้"),

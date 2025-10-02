@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:treecals/MainPage/Tree/Normalplotedit.dart';
+import 'package:treecals/MainPage/Tree/Plotfastedit.dart';
 import 'package:treecals/Services/PlotService.dart';
 
 class PlotWidget extends StatefulWidget {
@@ -116,9 +118,43 @@ class _PlotWidgetState extends State<PlotWidget> {
                             ],
                           ),
                         ),
-                        Padding(
-                          padding: const EdgeInsets.only(left: 8),
-                          child: Icon(Icons.arrow_forward),
+                        IconButton(
+                          icon: Icon(Icons.arrow_forward_ios),
+                          onPressed: () async {
+                            if (type == "แปลงเร็ว") {
+                              final result = await Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (_) => Plotfastedit(
+                                    userID: widget.ID,
+                                    plotID: myPlots[index]["id"],
+                                    plotData: plot,
+                                  ),
+                                ),
+                              );
+                              if (result == true) {
+                                setState(() {
+                                  loadPlots();
+                                });
+                              }
+                            } else if (type == "แปลงปกติ") {
+                              final result = await Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (_) => Normalplotedit(
+                                    userID: widget.ID,
+                                    plotID: myPlots[index]["id"],
+                                    plotData: plot,
+                                  ),
+                                ),
+                              );
+                              if (result == true) {
+                                setState(() {
+                                  loadPlots();
+                                });
+                              }
+                            }
+                          },
                         ),
                       ],
                     ),
