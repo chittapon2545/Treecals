@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:treecals/MainPage/Home/Widget/PlotWidget.dart';
 import 'package:treecals/MainPage/Home/Widget/TreeWidget.dart';
+import 'package:treecals/MainPage/Home/Widget/DisplayGraph.dart';
 import 'package:treecals/Services/User.dart';
 import 'package:treecals/Services/Individaultree.dart';
 
@@ -100,15 +101,12 @@ class _HomePageState extends State<HomePage> {
           height: 220,
           child: Column(
             children: [
-              Padding(
-                padding: EdgeInsets.symmetric(horizontal: 40),
-                child: Container(
-                  width: MediaQuery.of(context).size.width,
-                  height: 130,
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(25),
-                  ),
+              Container(
+                width: MediaQuery.of(context).size.width,
+                height: 130,
+                child: DisplayGraph(
+                  state: _state, // 1 = Plot, 2 = Tree
+                  userId: _ID, // ส่ง userId ไปกรองข้อมูล
                 ),
               ),
               Padding(

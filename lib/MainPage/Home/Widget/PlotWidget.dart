@@ -108,12 +108,16 @@ class _PlotWidgetState extends State<PlotWidget> {
                               if (type == "แปลงปกติ") ...{
                                 Text("ชนิดแปลง: ปกติ"),
                                 Text("ขนาดแปลง: ${plot['area'] ?? '-'} ไร่"),
-                                Text("Credit: ${plot['Credit'] ?? '-'}"),
+                                Text(
+                                  "Credit: ${plot['Credit'] != null ? double.tryParse(plot['Credit'].toString())?.toStringAsFixed(2) ?? '-' : '-'}",
+                                ),
                               } else if (type == "แปลงเร็ว") ...{
                                 Text("ชนิดแปลง: เร็ว"),
                                 Text("ขนาดแปลง: ${plot['area'] ?? '-'} ไร่"),
                                 Text("เวลา: ${plot['time']} ปี"),
-                                Text("Credit: ${plot['Credit'] ?? '-'}"),
+                                Text(
+                                  "Credit: ${plot['Credit'] != null ? double.tryParse(plot['Credit'].toString())?.toStringAsFixed(2) ?? '-' : '-'}",
+                                ),
                               },
                             ],
                           ),

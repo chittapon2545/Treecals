@@ -20,6 +20,8 @@ class _EditpassPageState extends State<EditpassPage> {
   late String _ID; // เปลี่ยน int เป็น String
   String oldPassword = "";
   String newPassword = "";
+  String checkPassword = "";
+  bool _obscureText = true;
   @override
   void initState() {
     super.initState();
@@ -110,6 +112,7 @@ class _EditpassPageState extends State<EditpassPage> {
                     width: MediaQuery.of(context).size.width,
                     child: TextField(
                       controller: _oldPasswordEditController,
+                      obscureText: _obscureText,
                       style: TextStyle(color: Colors.black),
                       decoration: InputDecoration(
                         filled: true,
@@ -123,6 +126,18 @@ class _EditpassPageState extends State<EditpassPage> {
                           borderSide: BorderSide(color: Colors.white, width: 0),
                           borderRadius: BorderRadius.circular(15),
                         ),
+                        suffixIcon: IconButton(
+                          onPressed: () {
+                            setState(() {
+                              _obscureText = !_obscureText;
+                            });
+                          },
+                          icon: Icon(
+                            _obscureText
+                                ? Icons.visibility_off
+                                : Icons.visibility,
+                          ),
+                        ),
                       ),
                     ),
                   ),
@@ -133,6 +148,7 @@ class _EditpassPageState extends State<EditpassPage> {
                     width: MediaQuery.of(context).size.width,
                     child: TextField(
                       controller: _newPasswordEditController,
+                      obscureText: _obscureText,
                       style: TextStyle(color: Colors.black),
                       decoration: InputDecoration(
                         filled: true,
@@ -146,6 +162,18 @@ class _EditpassPageState extends State<EditpassPage> {
                           borderSide: BorderSide(color: Colors.white, width: 0),
                           borderRadius: BorderRadius.circular(15),
                         ),
+                        suffixIcon: IconButton(
+                          onPressed: () {
+                            setState(() {
+                              _obscureText = !_obscureText;
+                            });
+                          },
+                          icon: Icon(
+                            _obscureText
+                                ? Icons.visibility_off
+                                : Icons.visibility,
+                          ),
+                        ),
                       ),
                     ),
                   ),
@@ -156,6 +184,7 @@ class _EditpassPageState extends State<EditpassPage> {
                     width: MediaQuery.of(context).size.width,
                     child: TextField(
                       controller: _checkPasswordEditController,
+                      obscureText: _obscureText,
                       style: TextStyle(color: Colors.black),
                       decoration: InputDecoration(
                         filled: true,
@@ -168,6 +197,18 @@ class _EditpassPageState extends State<EditpassPage> {
                         focusedBorder: OutlineInputBorder(
                           borderSide: BorderSide(color: Colors.white, width: 0),
                           borderRadius: BorderRadius.circular(15),
+                        ),
+                        suffixIcon: IconButton(
+                          onPressed: () {
+                            setState(() {
+                              _obscureText = !_obscureText;
+                            });
+                          },
+                          icon: Icon(
+                            _obscureText
+                                ? Icons.visibility_off
+                                : Icons.visibility,
+                          ),
                         ),
                       ),
                     ),
@@ -182,16 +223,54 @@ class _EditpassPageState extends State<EditpassPage> {
                       setState(() {
                         oldPassword = _oldPasswordEditController.text.trim();
                         newPassword = _newPasswordEditController.text.trim();
+                        checkPassword = _checkPasswordEditController.text
+                            .trim();
                       });
+                      if (oldPassword.isEmpty ||
+                          newPassword.isEmpty ||
+                          checkPassword.isEmpty) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: Text("กรุณากรอกข้อมูลให้ครบถ้วน"),
+                            backgroundColor: Colors.red,
+                          ),
+                        );
+                        return;
+                      }
+                      if (newPassword != checkPassword) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: Text("รหัสผ่านใหม่ไม่ตรงกัน"),
+                            backgroundColor: Colors.red,
+                          ),
+                        );
+                        return;
+                      }
+
                       final passwordData = await userService.Repassword(
                         _ID,
                         oldPassword,
                       );
+                      if (passwordData == null) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: Text("รหัสผ่านปัจจุบันไม่ถูกต้อง"),
+                            backgroundColor: Colors.red,
+                          ),
+                        );
+                        return;
+                      }
                       if (passwordData != null &&
                           _newPasswordEditController.text.trim() ==
                               _checkPasswordEditController.text.trim()) {
                         convert.updatePasswordHash(_ID, newPassword);
-                        print("Update Success");
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: Text("เปลี่ยนรหัสผ่านสำเร็จ"),
+                            backgroundColor: Colors.green,
+                          ),
+                        );
+                        Navigator.pop(context);
                       }
                     },
                     child: Text(
