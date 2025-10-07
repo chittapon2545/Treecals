@@ -153,6 +153,7 @@ class _PlotfasteditState extends State<Plotfastedit> {
                 onTap: pickPolygon,
               ),
               Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
                   ElevatedButton.icon(
                     icon: Icon(Icons.save),

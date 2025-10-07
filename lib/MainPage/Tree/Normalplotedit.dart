@@ -81,6 +81,46 @@ class _NormalploteditState extends State<Normalplotedit> {
     });
   }
 
+  Future<void> deletePlot() async {
+    final confirm = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text("ยืนยันการลบแปลง"),
+        content: Text(
+          "คุณต้องการลบแปลงนี้หรือไม่?\n\nข้อมูลทุกอย่างในแปลงนี้จะถูกลบถาวร!",
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context, false),
+            child: Text("ยกเลิก"),
+          ),
+          ElevatedButton(
+            onPressed: () => Navigator.pop(context, true),
+            style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
+            child: Text("ลบแปลง", style: TextStyle(color: Colors.white)),
+          ),
+        ],
+      ),
+    );
+
+    if (confirm != true) return;
+
+    try {
+      final plotRef = db.child("Normalplot/${widget.plotID}");
+      await plotRef.remove();
+
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('ลบแปลงเรียบร้อยแล้ว')));
+
+      Navigator.pop(context, true); // กลับไปหน้าก่อนหน้า
+    } catch (e) {
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('เกิดข้อผิดพลาดในการลบแปลง: $e')));
+    }
+  }
+
   void addsampleplot() {
     setState(() {
       final id = "SamplePlot${samplePlots.length + 1}";
@@ -359,13 +399,28 @@ class _NormalploteditState extends State<Normalplotedit> {
           ElevatedButton.icon(
             onPressed: () => addsampleplot(),
             label: Text("เพิ่มแปลงตัวอย่าง"),
-            icon: Icon(Icons.add, color: Colors.white),
+            icon: Icon(Icons.add, color: const Color.fromARGB(255, 14, 14, 14)),
           ),
           SizedBox(height: 16),
-          ElevatedButton.icon(
-            onPressed: () => updatePlot(),
-            label: Text("บันทึก"),
-            icon: Icon(Icons.add, color: Colors.white),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              ElevatedButton.icon(
+                onPressed: () => updatePlot(),
+                label: Text("บันทึก"),
+                icon: Icon(
+                  Icons.add,
+                  color: const Color.fromARGB(255, 255, 255, 255),
+                ),
+                style: ElevatedButton.styleFrom(backgroundColor: Colors.green),
+              ),
+              ElevatedButton.icon(
+                onPressed: () => deletePlot(),
+                label: Text("ลบแปลง"),
+                icon: Icon(Icons.delete, color: Colors.white),
+                style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
+              ),
+            ],
           ),
         ],
       ),
