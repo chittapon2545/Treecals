@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:treecals/MainPage/NavigatorBar.dart';
+import 'package:treecals/Services/ImagePickerService.dart';
+import 'package:treecals/Services/StorageService.dart';
 import 'package:treecals/Services/User.dart';
+import 'dart:io';
+import 'package:image_picker/image_picker.dart';
 
 class EditdataPage extends StatefulWidget {
   final String ID; // เปลี่ยน int เป็น String
@@ -11,16 +15,17 @@ class EditdataPage extends StatefulWidget {
 }
 
 class _EditdataPageState extends State<EditdataPage> {
+  final ImagePickerService imageService = ImagePickerService();
+  final StorageService storageService = StorageService();
+
+  File? _selectedImage;
   UserService userService = UserService();
   late String _ID; // เปลี่ยน int เป็น String
   TextEditingController Fname = TextEditingController();
   TextEditingController Lname = TextEditingController();
   TextEditingController email = TextEditingController();
   TextEditingController address = TextEditingController();
-  String firstname = "";
-  String lastname = "";
-  String email1 = "";
-  String address1 = "";
+
   @override
   void initState() {
     super.initState();
@@ -35,6 +40,48 @@ class _EditdataPageState extends State<EditdataPage> {
       Lname.text = "${userData['Lastname']}";
       email.text = "${userData['Email']}";
       address.text = "${userData['Address']}";
+    }
+  }
+
+  Future<void> _pickImage() async {
+    final picked = await imageService.pickImageFromGallery();
+    if (picked != null) {
+      setState(() {
+        _selectedImage = picked;
+      });
+    }
+  }
+
+  Future<void> _saveData() async {
+    String firstname = Fname.text.trim();
+    String lastname = Lname.text.trim();
+    String email1 = email.text.trim();
+    String address1 = address.text.trim();
+
+    if (_selectedImage != null) {
+      await storageService.uploadProfileImage(_ID, _selectedImage!);
+    }
+
+    final result = await userService.updateUserData(
+      _ID,
+      firstname,
+      lastname,
+      email1,
+      address1,
+    );
+
+    if (result != null) {
+      Navigator.pushAndRemoveUntil(
+        context,
+        MaterialPageRoute(
+          builder: (context) => NavigatorPage(state1: 3, ID: _ID),
+        ),
+        (route) => false,
+      );
+    } else {
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text("ไม่สามารถอัปเดตข้อมูลได้")));
     }
   }
 
@@ -114,6 +161,30 @@ class _EditdataPageState extends State<EditdataPage> {
                         ],
                       ),
                     ),
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.only(top: 30),
+                  child: Column(
+                    children: [
+                      CircleAvatar(
+                        radius: 60,
+                        backgroundColor: Colors.white,
+                        backgroundImage: _selectedImage != null
+                            ? FileImage(_selectedImage!)
+                            : AssetImage("assets/images/profile_icon.png")
+                                  as ImageProvider,
+                      ),
+                      TextButton.icon(
+                        onPressed: _pickImage,
+                        icon: Icon(Icons.camera_alt),
+                        label: Text("เลือกรูปโปรไฟล์"),
+                        style: TextButton.styleFrom(
+                          foregroundColor: Colors.white,
+                          backgroundColor: Colors.black.withOpacity(0.7),
+                        ),
+                      ),
+                    ],
                   ),
                 ),
                 Row(
@@ -230,40 +301,12 @@ class _EditdataPageState extends State<EditdataPage> {
                     ),
                   ),
                 ),
-                SizedBox(height: 70),
+                SizedBox(height: 30),
                 SizedBox(
                   width: MediaQuery.of(context).size.width - 150,
                   height: 50,
                   child: TextButton(
-                    onPressed: () async {
-                      String firstname = Fname.text.trim();
-                      String lastname = Lname.text.trim();
-                      String email1 = email.text.trim();
-                      String address1 = address.text.toString();
-
-                      final result = await userService.updateUserData(
-                        _ID, // ส่ง String
-                        firstname,
-                        lastname,
-                        email1,
-                        address1,
-                      );
-                      if (result != null) {
-                        Navigator.pushAndRemoveUntil(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) =>
-                                NavigatorPage(state1: 3, ID: _ID),
-                          ),
-                          (route) => false,
-                        );
-                      } else {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(content: Text("ไม่สามารถอัปเดตข้อมูลได้")),
-                        );
-                      }
-                    },
-
+                    onPressed: _saveData,
                     child: Text(
                       "บันทึก",
                       style: TextStyle(

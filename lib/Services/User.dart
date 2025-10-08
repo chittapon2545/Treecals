@@ -1,5 +1,7 @@
 import 'package:bcrypt/bcrypt.dart';
+import 'dart:io';
 import 'package:firebase_database/firebase_database.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 
 class UserService {
   final DatabaseReference _userRef = FirebaseDatabase.instance.ref().child(
@@ -98,6 +100,7 @@ class UserService {
           'Phone': entry.value['Phone'],
           'Password_hash': entry.value['Password_hash'],
           'Username': entry.value['Username'],
+          'ProfileURL': entry.value['ProfileURL'] ?? "",
         };
       } catch (e) {
         return null;
@@ -145,11 +148,7 @@ class UserService {
     String address,
   ) async {
     try {
-      final userRef = _userRef.child(ID);
-      final snapshot = await _userRef.get();
-      if (!snapshot.exists) return null;
-
-      await userRef.update({
+      await _userRef.child(ID).update({
         'Firstname': firstname,
         'Lastname': lastname,
         'Email': email,
@@ -177,9 +176,7 @@ class UserService {
 
     if (snapshot.exists && snapshot.value is Map) {
       final data = Map<String, dynamic>.from(snapshot.value as Map);
-
       for (var key in data.keys) {
-        // ดึงเลขจาก key เช่น U1 => 1
         final number = int.tryParse(key.replaceAll('U', '')) ?? 0;
         if (number > maxNumber) {
           maxNumber = number;
@@ -189,14 +186,45 @@ class UserService {
 
     final newKey = 'U${maxNumber + 1}';
 
-    await _userRef.child(newKey).set({
-      'Firstname': firstname,
-      'Lastname': lastname,
-      'Username': username,
-      'Password_hash': password,
-      'Email': email,
-      'Address': address,
-      'Phone': phone,
-    });
+    try {
+      await _userRef.child(newKey).set({
+        'Firstname': firstname,
+        'Lastname': lastname,
+        'Username': username,
+        'Password_hash': password,
+        'Email': email,
+        'Address': address,
+        'Phone': phone,
+        'ProfileURL':
+            "", // เก็บช่องนี้ไว้เฉย ๆ กัน error ถ้า field มีอยู่ในระบบเก่า
+      });
+
+      print("User $newKey created successfully.");
+    } catch (e) {
+      print("Error inserting user: $e");
+    }
+  }
+
+  Future<String?> uploadProfileImage(String userId, File imageFile) async {
+    try {
+      final storageRef = FirebaseStorage.instance
+          .ref()
+          .child("profile_images")
+          .child("$userId.jpg");
+
+      // อัปโหลดไฟล์
+      await storageRef.putFile(imageFile);
+
+      // ดึงลิงก์ดาวน์โหลด
+      final downloadUrl = await storageRef.getDownloadURL();
+
+      // บันทึกลง Realtime Database
+      await _userRef.child(userId).update({"ProfileURL": downloadUrl});
+
+      return downloadUrl;
+    } catch (e) {
+      print("Error uploading profile image: $e");
+      return null;
+    }
   }
 }

@@ -19,6 +19,7 @@ class _ProfilePageState extends State<ProfilePage> {
   String phone = "";
   String email = "";
   String address = "";
+  String profileUrl = "";
   @override
   void initState() {
     super.initState();
@@ -35,6 +36,7 @@ class _ProfilePageState extends State<ProfilePage> {
         phone = "${userData['Phone']}";
         email = "${userData['Email']}";
         address = "${userData['Address']}";
+        profileUrl = userData['ProfileURL'] ?? "";
       });
     }
   }
@@ -74,6 +76,19 @@ class _ProfilePageState extends State<ProfilePage> {
                 ),
               ),
             ),
+          ),
+        ),
+        SizedBox(height: 20),
+        Center(
+          child: CircleAvatar(
+            radius: 60,
+            backgroundColor: Colors.grey[300],
+            backgroundImage: profileUrl.isNotEmpty
+                ? NetworkImage(profileUrl)
+                : null,
+            child: profileUrl.isEmpty
+                ? Icon(Icons.person, size: 60, color: Colors.white)
+                : null,
           ),
         ),
         SizedBox(height: 20),

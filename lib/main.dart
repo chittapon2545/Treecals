@@ -1,6 +1,7 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:treecals/Login/loginPage.dart';
+import 'package:firebase_app_check/firebase_app_check.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -21,7 +22,7 @@ void main() async {
       );
     }
   } catch (e) {
-    // ignore duplicate app error
+    print("Firebase initialization error: $e");
   }
   String googleMapsApiKey = "AIzaSyDPeleLrkQAfuw3FzasbDCpQW8_frWfdzw";
 
